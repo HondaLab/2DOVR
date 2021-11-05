@@ -15,9 +15,11 @@ import file_read as fr
 class PI_CAMERA_CLASS():
    def __init__(self,upper,lower):
       #self.udp = sk.UDP_Send(MY_IP, sk.PICAM_PORT)
+      self.select_rect='n' # y(es)/n(o) 検出対象を選ぶかどうか
+      self.imshow='y'      # y(es)/n(o) カメラ映像を表示するかどうか，VNC必須
+      self.show_res='y'    # y(es)/n(o) 結果を表示(print)するかどうか
       self.PERIOD=0.01 #FPSですね
-
-      # カップの幅から距離を算出する式のパラメータ
+      
       self.A = 644.3
       self.B = -25.19
       self.C = 0.6182
@@ -26,8 +28,8 @@ class PI_CAMERA_CLASS():
 
       self.upper = upper
       self.lower = lower
-      #print("cap_upper,cap_lower")
-      #print("  ",self.upper,"     ",self.lower)
+      print("cap_upper,cap_lower")
+      print("  ",self.upper,"     ",self.lower)
       
       # カメラの解像度 例：640x480, 320x240
       self.RES_X=int( 320 )
@@ -151,6 +153,7 @@ class PI_CAMERA_CLASS():
       #print(lower_light,upper_light)
       
       return lower_light,upper_light
+       
 
 if __name__ == "__main__":
     select_hsv="n"     
@@ -159,9 +162,33 @@ if __name__ == "__main__":
     picam = PI_CAMERA_CLASS(upper,lower)
     count = 0
     lower_light,upper_light=picam.calc_hsv(select_hsv)
+    """
+    else:
+       #Red Cup H:S:V=3:140:129
+       # h,s,v = 171,106,138
+       H = 172; S = 150; V = 122
+       h_range = 10; s_range = 50; v_range = 50 # 明度の許容範囲
+       hL=H-h_range
+       hU=H+h_range
+       sL=S-s_range
+       if sL < 0:
+           sL = 0
+       sU=S+s_range
+       if sU > 255:
+           sU = 255
+       vL=V-v_range
+       if vL < 0:
+           vL = 0
+       vU=V+v_range
+       if vU > 255:
+           vU = 255
+       lower_light=np.array([hL,sL,vL])
+       upper_light=np.array([hU,sU,vU])
+    """
     key = cv2.waitKey(1)
     while key!=ord('q'):
         try: 
+            #picam.calc_dist_theta(lower_light,upper_light)
             dis, rad, frame = picam.calc_dist_theta(lower_light, upper_light)
             cv2.imshow("test", frame)
             key = cv2.waitKey(1)
