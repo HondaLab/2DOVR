@@ -20,19 +20,23 @@ import modules.vl53_4a as lidar  # 赤外線レーザーレーダ 3つの場合
 import modules.keyin as keyin
 import file_read as fr
 
+f1 = open('time_distance_data.csv','w',encoding='utf-8')
+csv_writer1 = csv.writer(f1) 
+
+def write_data(t,l,c,r):
+    write_data = []
+    write_data.append(t)
+    write_data.append(l)
+    write_data.append(c)
+    write_data.append(r)
+    csv_writer1.writerow(write_data)
+
 motor_run = "y"  # モータを回転させる場合は"y"
 show_res = "y"  # モータを回転させる場合は"y"
 
-past_areaR=1.0
-past_areaL=1.0
-right_timer=0
-left_timer=0
-timer=0
-
-
 # 弾性散乱のための変数
-#TURN_TIME=0.3
-TURN_POWER=90
+TURN_TIME=0.3
+TURN_POWER=100
 
 SLEEP = 0.05
 BUS = 1         # bus number
@@ -85,7 +89,6 @@ print("#-- #-- #-- #-- #-- #-- #-- #-- #--")
 
 start = time.time()
 now = start
-last=now
 
 vl=0;vr=0
 ch = key.read()
@@ -97,6 +100,8 @@ while ch!="q":
         distanceC=tofC.get_distance()/1000
            
         distanceR=tofR.get_distance()/1000
+        wt = time.time()
+        write_data(wt,distanceL,distanceC,distanceR)
 
         distanceL,distanceC,distanceR = tof_adjust(distanceL,distanceC,distanceR)
 
@@ -106,48 +111,19 @@ while ch!="q":
             areaR=math.exp(gamma*math.log(distanceC))*math.exp((1-gamma)*math.log(distanceR))
 
         # vl,vrは2次元最適速度モデルで決定される速度
-        
-
-        #else:
-            #vl,vr = motor_out_adjust(MAX_SPEED,MAX_SPEED)
-        vl,vr = motor_out_adjust(MAX_SPEED,MAX_SPEED)
-
-        timer = time.time() - last
-        if areaL >= THRESHOLD and areaR >= THRESHOLD:
-            if past_areaL < THRESHOLD or past_areaR < THRESHOLD:
-                if past_areaL<past_areaR:
-                    mL.run(TURN_POWER)
-                    mR.run(-TURN_POWER)
-                    right_timer = right_timer + timer
-                    #time.sleep(TURN_TIME)
-                    time.sleep(right_timer)
-                    right_timer=0
-                else:
-                    mL.run(-TURN_POWER)
-                    mR.run(TURN_POWER)
-                    left_timer = left_timer + timer
-                    #time.sleep(TURN_TIME)
-                    time.sleep(left_timer)
-                    left_timer=0
-            else:
-                mL.run(vl)
-                mR.run(vr)
-        else:
-        #if areaL < THRESHOLD or areaR < THRESHOLD:
+        if areaL < THRESHOLD or areaR < THRESHOLD:
             if areaL<areaR:
                 mL.run(TURN_POWER)
                 mR.run(-TURN_POWER)
-                right_timer = right_timer + timer
                 #time.sleep(TURN_TIME)
             else:
                 mL.run(-TURN_POWER)
                 mR.run(TURN_POWER)
-                left_timer = left_timer + timer
                 #time.sleep(TURN_TIME)
 
-        past_areaL=areaL
-        past_areaR=areaR
-        
+        else:
+            vl,vr = motor_out_adjust(MAX_SPEED,MAX_SPEED)
+
         if show_res == 'y':
             print("\r %6.2f " % (now-start),end="")
             #print(" dist=%6.2f " % dist, end="")
@@ -160,10 +136,9 @@ while ch!="q":
             print(" areaL=%6.2f " % areaL, end="")
             print(" areaR=%6.2f " % areaR, end="")
 
-        #if motor_run == 'y':
-            #mL.run(vl)
-            #mR.run(vr)
-        
+        if motor_run == 'y':
+            mL.run(vl)
+            mR.run(vr)
 
         time.sleep(DT)
         last = now
@@ -176,4 +151,5 @@ while ch!="q":
         sys.exit("\nsystem exit ! \n")
 mR.stop()
 mL.stop()
+f1.close()
 print("#-- #-- #-- #-- #-- #-- #-- #-- #--")
