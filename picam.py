@@ -118,7 +118,7 @@ class PI_CAMERA_CLASS():
           bbox = cv2.selectROI(frame, False)
           #print(bbox)
       else:
-          bbox = (141,130,18,5)
+          bbox = (140,110,40,20)
           
       #ok = tracker.init(frame, bbox)
       #print(bbox)
