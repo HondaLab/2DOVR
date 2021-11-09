@@ -21,8 +21,9 @@ import modules.motor5a as mt     # モーターを回転させるためのモジ
 import modules.vl53_4a as lidar  # 赤外線レーザーレーダ 3つの場合
 #import modules.tof2_3a as lidar # 赤外線レーザーレーダ 2つの場合
 import file_read as fr
+import modules.socket1a as sk
 
-select_hsv = "n" # 画面上で対象物を選択する場合は"y"
+auto_select_hsv = "n" # 画面上で対象物を選択する場合は"y"
 show_res = 'y'   # モータ出力や距離センサの値を表示する場合は "y"
 motor_run = "y"  # モータを回転させる場合は"y"
 imshow = "y"     # カメラが捉えた映像を表示する場合は"y"
@@ -41,6 +42,7 @@ DT = 0.015
 dt = DT
 THRESHOLD = 0.2 # OVMをon/offするための閾値
 EX_TIME = 5 
+MY_IP = '172.16.7.56'
 
 #  パラメータ記載のファイルの絶対パス
 PARM_OVM = "/home/pi/2DOVR/parm_ovm.csv" 
@@ -84,6 +86,7 @@ def synergistic_dist(distL,distC,distR,gamma):
 #  各変数定義
 parm_ovm = []
 
+
 #  パラメータ読み込み
 parm_ovm = fr.read_parm(PARM_OVM)
 upper,lower,hostname = fr.read_framesize(FRAME_SIZE)
@@ -102,20 +105,23 @@ print(" vs,   a, alpha,beta, b,  c,  None")
 print(parm_ovm)
 mL=mt.Lmotor(GPIO_L)         #  左モーター(gpio17番)
 mR=mt.Rmotor(GPIO_R)         #  右モーター(gpio18番)
+port = int(str(50)+str(hostname))
+print(port)
+udp = sk.UDP_Send(MY_IP,port)
 
-data = []
 gamma=0.33 # Center weight
 
 print("#-- #-- #-- #-- #-- #-- #-- #-- #--")
 
-lower_light,upper_light=picam.calc_hsv(select_hsv)
-time.sleep(10)
+lower_light,upper_light=picam.calc_hsv(auto_select_hsv)
+
 start = time.time()
 now = start
 
 key=cv2.waitKey(1)
 vl=0;vr=0
 while key!=ord('q'):
+    data = []
     dist,theta,frame = picam.calc_dist_theta(lower_light, upper_light)
     if dist==None:
         dist=2.0
@@ -142,6 +148,8 @@ while key!=ord('q'):
         vr = vr * MAX_SPEED
 
         vl,vr = motor_out_adjust(vl,vr)
+        data.append(theta)
+        udp.send(data)
 
         if show_res == 'y':
             print("\r %6.2f " % (now-start),end="")

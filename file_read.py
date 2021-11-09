@@ -48,7 +48,7 @@ def read_framesize(filepath):
         else:
             #print("該当なし")
             pass    
-    return upper,lower
+    return upper,lower,hostname
 
 
 if __name__ == "__main__":
