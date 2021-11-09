@@ -109,7 +109,7 @@ gamma=0.33 # Center weight
 print("#-- #-- #-- #-- #-- #-- #-- #-- #--")
 
 lower_light,upper_light=picam.calc_hsv(select_hsv)
-time.sleep(10)
+#time.sleep(10)
 start = time.time()
 now = start
 
