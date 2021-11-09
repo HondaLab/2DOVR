@@ -45,7 +45,7 @@ left_timer=0
 start_time=0
 stop_time=0
 timer=0
-adjustment=1.8
+adjustment=1.0
 
 
 # 弾性散乱のための変数
