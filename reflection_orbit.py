@@ -20,21 +20,6 @@ import modules.vl53_4a as lidar  # 赤外線レーザーレーダ 3つの場合
 import modules.keyin as keyin
 import file_read as fr
 
-f1 = open('time_data4.csv','w',encoding='utf-8')
-csv_writer1 = csv.writer(f1) 
-
-def write_data(t,dt,l,c,r,wtt,timer,tt):
-    write_data = []
-    write_data.append(t)
-    write_data.append(dt)
-    write_data.append(l)
-    write_data.append(c)
-    write_data.append(r)
-    write_data.append(wtt)
-    write_data.append(timer)
-    write_data.append(tt)
-    csv_writer1.writerow(write_data)
-
 motor_run = "y"  # モータを回転させる場合は"y"
 show_res = "y"  # モータを回転させる場合は"y"
 
@@ -136,23 +121,19 @@ while ch!="q":
                     stop_time = time.time()
                     timer = stop_time - start_time
                     right_timer = right_timer + timer
-                    wtt = right_timer
                     mL.run(TURN_POWER)
                     mR.run(-TURN_POWER)
                     #time.sleep(TURN_TIME)
                     time.sleep(adjustment*right_timer)
-                    wtimer = right_timer + (adjustment*right_timer)
                     right_timer=0
                 else:
                     stop_time = time.time()
                     timer = stop_time - start_time
                     left_timer = left_timer + timer
-                    wtt = left_timer
                     mL.run(-TURN_POWER)
                     mR.run(TURN_POWER)
                     #time.sleep(TURN_TIME)
                     time.sleep(adjustment*left_timer)
-                    wtimer = left_timer + (adjustment*left_timer)
                     left_timer=0
             else:
                 mL.run(vl)
@@ -203,9 +184,7 @@ while ch!="q":
         now = time.time()
         dt = now-last
         ch = key.read()
-        wt = time.time()
-        write_data(wt,dt,distanceL,distanceC,distanceR,wtt,wtimer,timer)
-        wtt,wtimer,timer=0,0,0
+        timer=0
     except KeyboardInterrupt:
         mR.stop()
         mL.stop()
