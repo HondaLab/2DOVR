@@ -22,7 +22,7 @@ import modules.vl53_4a as lidar  # 赤外線レーザーレーダ 3つの場合
 #import modules.tof2_3a as lidar # 赤外線レーザーレーダ 2つの場合
 import file_read as fr
 
-select_hsv = "n" # 画面上で対象物を選択する場合は"y"
+select_hsv = "y" # 画面上で対象物を選択する場合は"y"
 show_res = 'y'   # モータ出力や距離センサの値を表示する場合は "y"
 motor_run = "y"  # モータを回転させる場合は"y"
 imshow = "y"     # カメラが捉えた映像を表示する場合は"y"
