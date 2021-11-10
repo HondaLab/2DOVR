@@ -20,12 +20,12 @@ import picam as PICAM_py         # picamera関係
 import modules.motor5a as mt     # モーターを回転させるためのモジュール
 import modules.vl53_4a as lidar  # 赤外線レーザーレーダ 3つの場合
 #import modules.tof2_3a as lidar # 赤外線レーザーレーダ 2つの場合
-import file_read as fr
+import modules.file_read as fr
 
-select_hsv = "y" # 画面上で対象物を選択する場合は"y"
+select_hsv = "n" # 画面上で対象物を選択する場合は"y"
 show_res = 'y'   # モータ出力や距離センサの値を表示する場合は "y"
 motor_run = "y"  # モータを回転させる場合は"y"
-imshow = "y"     # カメラが捉えた映像を表示する場合は"y"
+imshow = "n"     # カメラが捉えた映像を表示する場合は"y"
 
 # 弾性散乱のための変数
 TURN_TIME=0.3
@@ -108,7 +108,7 @@ gamma=0.33 # Center weight
 
 print("#-- #-- #-- #-- #-- #-- #-- #-- #--")
 
-lower_light,upper_light=picam.calc_hsv(select_hsv)
+lower_light,upper_light=picam.calc_hsv(select_hsv,hostname)
 #time.sleep(10)
 start = time.time()
 now = start

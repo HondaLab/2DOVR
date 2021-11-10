@@ -11,8 +11,8 @@ from picamera.array import PiRGBArray
 from picamera import PiCamera
 from subprocess import Popen
 
-import file_read as fr
-import robot_bbox as rb
+import modules.file_read as fr
+import modules.robot_bbox as rb
 
 class PI_CAMERA_CLASS():
    def __init__(self,upper,lower):
@@ -100,7 +100,7 @@ class PI_CAMERA_CLASS():
          angle = np.rad2deg(rad)
          dis = (self.A/(width**self.C)) + self.B + (self.D*(abs(rad)**self.E))
          dis = float(dis/100)
-         print("\r %d %d %d %d" % (px,py,width,height), end="" )
+         #print("\r %d %d %d %d" % (px,py,width,height), end="" )
          #print("\r %6.4f %6.4f" % (angle, dis ), end="" )
          self.rawCapture.truncate(0) # clear the stream for next frame
       else: #red cup not capture
@@ -109,7 +109,7 @@ class PI_CAMERA_CLASS():
       self.rawCapture.truncate(0) # clear the stream for next frame
       return dis, rad, frame
 
-   def calc_hsv(self,select_hsv):
+   def calc_hsv(self,select_hsv, hostname):
       tmp = self.cam.capture_continuous(self.rawCapture, format="bgr", use_video_port="True")
       cap = next(tmp)
       frame = cap.array
@@ -118,9 +118,10 @@ class PI_CAMERA_CLASS():
       bbox = (0,0,10,10)
       if select_hsv == "y":
           bbox = cv2.selectROI(frame, False)
-          print(bbox)
+          #print(bbox)
       else:
-          bbox = (155,127,10,10)
+          bbox = rb.bbox_return(hostname)
+          #print(bbox)
           
       #ok = tracker.init(frame, bbox)
       #print(bbox)
@@ -160,7 +161,7 @@ if __name__ == "__main__":
     upper,lower,hostname = fr.read_framesize(FRAME_SIZE)
     picam = PI_CAMERA_CLASS(upper,lower)
     count = 0
-    lower_light,upper_light=picam.calc_hsv(select_hsv)
+    lower_light,upper_light=picam.calc_hsv(select_hsv,hostname)
     key = cv2.waitKey(1)
     while key!=ord('q'):
         try: 

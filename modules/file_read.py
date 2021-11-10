@@ -2,7 +2,7 @@
 import csv
 import platform
 
-FILE1 = "/home/pi/2DOVR/parm_smm.csv"
+FILE1 = "/home/pi/2DOVR/parm_ovm.csv"
 FILE2 = "/home/pi/2DOVR/framesize.csv"
 
 def read_parm(filepath):
@@ -38,11 +38,11 @@ def read_framesize(filepath):
     hostname = hostname.replace("]",'')
 
     #print(hostname)
-    #hostname = hostname.replace('ssr','')
+    host = hostname.replace('ssr','')
     #print(hostname)
     
     for i in range(len(tmp)):
-        if hostname == str(tmp[i][0]):
+        if host == str(tmp[i][0]):
             upper = int(tmp[i][1])
             lower = int(tmp[i][2])
         else:

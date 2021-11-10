@@ -12,7 +12,7 @@ def bbox_return(name):
     ssr111 = (155,127,10,10)
     ssr112 = (155,127,10,10)
     ns = locals()
-    print(ns[name])
+    #print(ns[name])
     ans = ns[name]
     return ans
     
