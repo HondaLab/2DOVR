@@ -116,15 +116,15 @@ class PI_CAMERA_CLASS():
       bbox = (0,0,10,10)
       if select_hsv == "y":
           bbox = cv2.selectROI(frame, False)
-          #print(bbox)
+          print(bbox)
       else:
-          bbox = (140,110,40,20)
+          bbox = (155,127,10,10)
           
       #ok = tracker.init(frame, bbox)
       #print(bbox)
       x=int(bbox[0]+bbox[2]/2)
       y=int(bbox[1]+bbox[3]/2)
-      print("hsv: %4d %4d %4d" % (hsv[y,x,0],hsv[y,x,1],hsv[y,x,2]))
+      #print("hsv: %4d %4d %4d" % (hsv[y,x,0],hsv[y,x,1],hsv[y,x,2]))
       self.rawCapture.truncate(0) # clear the stream for next frame
       cv2.destroyAllWindows()
 
@@ -153,7 +153,7 @@ class PI_CAMERA_CLASS():
       return lower_light,upper_light
 
 if __name__ == "__main__":
-    select_hsv="y"     
+    select_hsv="n"     
     FRAME_SIZE = "/home/pi/2DOVR/framesize.csv"
     upper,lower,hostname = fr.read_framesize(FRAME_SIZE)
     picam = PI_CAMERA_CLASS(upper,lower)
