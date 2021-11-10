@@ -98,7 +98,7 @@ class PI_CAMERA_CLASS():
          angle = np.rad2deg(rad)
          dis = (self.A/(width**self.C)) + self.B + (self.D*(abs(rad)**self.E))
          dis = float(dis/100)
-         #print("\r %d %d %d %d" % (px,py,width,height), end="" )
+         print("\r %d %d %d %d" % (px,py,width,height), end="" )
          #print("\r %6.4f %6.4f" % (angle, dis ), end="" )
          self.rawCapture.truncate(0) # clear the stream for next frame
       else: #red cup not capture
@@ -153,9 +153,9 @@ class PI_CAMERA_CLASS():
       return lower_light,upper_light
 
 if __name__ == "__main__":
-    select_hsv="n"     
+    select_hsv="y"     
     FRAME_SIZE = "/home/pi/2DOVR/framesize.csv"
-    upper,lower = fr.read_framesize(FRAME_SIZE)
+    upper,lower,hostname = fr.read_framesize(FRAME_SIZE)
     picam = PI_CAMERA_CLASS(upper,lower)
     count = 0
     lower_light,upper_light=picam.calc_hsv(select_hsv)
