@@ -37,9 +37,9 @@ def read_framesize(filepath):
     hostname = EMAIL_SUBJECT_PREFIX.replace("[",'')
     hostname = hostname.replace("]",'')
 
-    print(hostname)
-    hostname = hostname.replace('ssr','')
-    print(hostname)
+    #print(hostname)
+    #hostname = hostname.replace('ssr','')
+    #print(hostname)
     
     for i in range(len(tmp)):
         if hostname == str(tmp[i][0]):
