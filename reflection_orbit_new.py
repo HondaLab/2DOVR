@@ -30,7 +30,7 @@ left_timer=0
 start_time=0
 stop_time=0
 timer=0
-adjustment=1.1
+adjustment=1.0
 
 
 # 弾性散乱のための変数
@@ -118,43 +118,54 @@ while ch!="q":
         if areaL >= THRESHOLD and areaR >= THRESHOLD:
             if past_areaL < THRESHOLD or past_areaR < THRESHOLD:
                 if past_areaL<past_areaR:
+                    stop_time = time.time()
+                    timer = stop_time - start_time
+                    #right_timer = right_timer + timer
                     mL.run(TURN_POWER)
                     mR.run(-TURN_POWER)
-                    right_timer = right_timer + timer
                     #time.sleep(TURN_TIME)
-                    time.sleep(adjustment*right_timer)
-                    right_timer=0
+                    #time.sleep(adjustment*right_timer)
+                    time.sleep(adjustment*timer)
+                    start_time,stop_time=0,0
+                    #right_timer=0
                 else:
+                    stop_time = time.time()
+                    timer = stop_time - start_time
+                    #left_timer = left_timer + timer
                     mL.run(-TURN_POWER)
                     mR.run(TURN_POWER)
-                    left_timer = left_timer + timer
                     #time.sleep(TURN_TIME)
-                    time.sleep(adjustment*left_timer)
-                    left_timer=0
-            else:
-                mL.run(vl)
-                mR.run(vr)
+                    #time.sleep(adjustment*left_timer)
+                    time.sleep(adjustment*timer)
+                    start_time,stop_time=0,0
+                    #left_timer=0
+
+            mL.run(vl)
+            mR.run(vr)
+            
         else:
         #if areaL < THRESHOLD or areaR < THRESHOLD:
             if areaL<areaR:
-                if past_areaL < THRESHOLD or past_areaR < THRESHOLD:
-                    stop_time = time.time()
-                    timer = stop_time - start_time
+                #if past_areaL < THRESHOLD or past_areaR < THRESHOLD:
+                    #stop_time = time.time()
+                    #timer = stop_time - start_time
                 mL.run(TURN_POWER)
                 mR.run(-TURN_POWER)
-                start_time = time.time()
-                right_timer = right_timer + timer
-                timer = 0
+                if past_areaL < THRESHOLD or past_areaR < THRESHOLD:
+                    start_time = time.time()
+                #start_time = time.time()
+                #right_timer = right_timer + timer
                 #time.sleep(TURN_TIME)
             else:
-                if past_areaL < THRESHOLD or past_areaR < THRESHOLD:
-                    stop_time = time.time()
-                    timer = stop_time - start_time
+                #if past_areaL < THRESHOLD or past_areaR < THRESHOLD:
+                    #stop_time = time.time()
+                    #timer = stop_time - start_time
                 mL.run(-TURN_POWER)
                 mR.run(TURN_POWER)
-                start_time = time.time()
-                left_timer = left_timer + timer
-                timer = 0
+                if past_areaL < THRESHOLD or past_areaR < THRESHOLD:
+                    start_time = time.time()
+                #start_time = time.time()
+                #left_timer = left_timer + timer
                 #time.sleep(TURN_TIME)
 
         past_areaL=areaL
@@ -182,6 +193,7 @@ while ch!="q":
         now = time.time()
         dt = now-last
         ch = key.read()
+        timer=0
     except KeyboardInterrupt:
         mR.stop()
         mL.stop()
