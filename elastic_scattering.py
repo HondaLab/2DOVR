@@ -18,7 +18,7 @@ import numpy as np
 import modules.motor5a as mt     # モーターを回転させるためのモジュール
 import modules.vl53_4a as lidar  # 赤外線レーザーレーダ 3つの場合
 import modules.keyin as keyin
-import file_read as fr
+import modules.file_read as fr
 
 motor_run = "y"  # モータを回転させる場合は"y"
 show_res = "y"  # モータを回転させる場合は"y"
