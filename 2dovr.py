@@ -31,6 +31,8 @@ imshow = "y"     # カメラが捉えた映像を表示する場合は"y"
 TURN_TIME=0.3
 TURN_POWER=100
 
+select_sleep = 20
+
 SLEEP = 0.05
 BUS = 1         # bus number
 I2C_ADDR = 0x54 # I2Cアドレス
@@ -109,7 +111,7 @@ gamma=0.33 # Center weight
 print("#-- #-- #-- #-- #-- #-- #-- #-- #--")
 
 lower_light,upper_light=picam.calc_hsv(select_hsv,hostname)
-time.sleep(10)
+time.sleep(select_sleep)
 start = time.time()
 now = start
 
