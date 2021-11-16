@@ -172,7 +172,7 @@ while ch!="q":
                     #timer = stop_time - start_time
                 mL.run(TURN_POWER)
                 mR.run(-TURN_POWER)
-                if past_areaL >= THRESHOLD or past_areaR >= THRESHOLD:
+                if past_areaL >= THRESHOLD and past_areaR >= THRESHOLD:
                     start_time = time.time()
                 if past_areaL < THRESHOLD or past_areaR < THRESHOLD:
                     wtt = wtt + 1
@@ -185,7 +185,7 @@ while ch!="q":
                     #timer = stop_time - start_time
                 mL.run(-TURN_POWER)
                 mR.run(TURN_POWER)
-                if past_areaL >= THRESHOLD or past_areaR >= THRESHOLD:
+                if past_areaL >= THRESHOLD and past_areaR >= THRESHOLD:
                     start_time = time.time()
                 if past_areaL < THRESHOLD or past_areaR < THRESHOLD:
                     wtt = wtt + 1
