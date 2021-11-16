@@ -23,16 +23,16 @@ import file_read as fr
 f1 = open('time_data4.csv','w',encoding='utf-8')
 csv_writer1 = csv.writer(f1) 
 
-def write_data(t,dt,l,c,r,wtt,timer,tt):
+def write_data(t,dt,l,c,r,st,mt,at):
     write_data = []
     write_data.append(t)
     write_data.append(dt)
     write_data.append(l)
     write_data.append(c)
     write_data.append(r)
-    write_data.append(wtt)
-    write_data.append(timer)
-    write_data.append(tt)
+    write_data.append(st)
+    write_data.append(mt)
+    write_data.append(at)
     csv_writer1.writerow(write_data)
 
 motor_run = "y"  # モータを回転させる場合は"y"
@@ -47,6 +47,7 @@ stop_time=0
 timer=0
 adjustment=1.0
 wtimer=0
+wtt=0
 
 
 # 弾性散乱のための変数
@@ -142,8 +143,9 @@ while ch!="q":
                     #time.sleep(TURN_TIME)
                     #time.sleep(adjustment*right_timer)
                     time.sleep(adjustment*timer)
-                    start_time,stop_time = 0,0
+                    #start_time,stop_time = 0,0
                     wtimer = timer + adjustment*timer
+                    wtt = wtt + 1
                     #right_timer=0
                 else:
                     stop_time = time.time()
@@ -154,8 +156,9 @@ while ch!="q":
                     #time.sleep(TURN_TIME)
                     #time.sleep(adjustment*left_timer)
                     time.sleep(adjustment*timer)
-                    start_time,stop_time = 0,0
+                    #start_time,stop_time = 0,0
                     wtimer = timer + adjustment*timer
+                    wtt = wtt + 1
                     #left_timer=0
 
             mL.run(vl)
@@ -169,8 +172,10 @@ while ch!="q":
                     #timer = stop_time - start_time
                 mL.run(TURN_POWER)
                 mR.run(-TURN_POWER)
-                if past_areaL < THRESHOLD or past_areaR < THRESHOLD:
+                if past_areaL >= THRESHOLD or past_areaR >= THRESHOLD:
                     start_time = time.time()
+                if past_areaL < THRESHOLD or past_areaR < THRESHOLD:
+                    wtt = wtt + 1
                 #start_time = time.time()
                 #right_timer = right_timer + timer
                 #time.sleep(TURN_TIME)
@@ -180,8 +185,10 @@ while ch!="q":
                     #timer = stop_time - start_time
                 mL.run(-TURN_POWER)
                 mR.run(TURN_POWER)
-                if past_areaL < THRESHOLD or past_areaR < THRESHOLD:
+                if past_areaL >= THRESHOLD or past_areaR >= THRESHOLD:
                     start_time = time.time()
+                if past_areaL < THRESHOLD or past_areaR < THRESHOLD:
+                    wtt = wtt + 1
                 #start_time = time.time()
                 #left_timer = left_timer + timer
                 #time.sleep(TURN_TIME)
@@ -212,8 +219,8 @@ while ch!="q":
         dt = now-last
         ch = key.read()
         wt = time.time()
-        write_data(wt,dt,distanceL,distanceC,distanceR,wtimer,timer)
-        wtt,wtimer,timer=0,0,0
+        write_data(wt,dt,distanceL,distanceC,distanceR,wtimer,timer,wtt)
+        wtimer,timer=0,0
         #timer=0
     except KeyboardInterrupt:
         mR.stop()
