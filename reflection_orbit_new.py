@@ -126,7 +126,7 @@ while ch!="q":
                     #time.sleep(TURN_TIME)
                     #time.sleep(adjustment*right_timer)
                     time.sleep(adjustment*timer)
-                    #start_time,stop_time=0,0
+                    start_time,stop_time=0,0
                     #right_timer=0
                 else:
                     stop_time = time.time()
@@ -137,7 +137,7 @@ while ch!="q":
                     #time.sleep(TURN_TIME)
                     #time.sleep(adjustment*left_timer)
                     time.sleep(adjustment*timer)
-                    #start_time,stop_time=0,0
+                    start_time,stop_time=0,0
                     #left_timer=0
 
             mL.run(vl)
