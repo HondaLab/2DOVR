@@ -23,7 +23,7 @@ import file_read as fr
 f1 = open('time_data4.csv','w',encoding='utf-8')
 csv_writer1 = csv.writer(f1) 
 
-def write_data(t,dt,l,c,r,wtt,timer,tt):
+def write_data(t,dt,l,c,r,wtt,timer,tt,at):
     write_data = []
     write_data.append(t)
     write_data.append(dt)
@@ -49,6 +49,10 @@ adjustment=1.0
 wtt=0
 wt=0
 wtimer=0
+t_now = 0
+t_last = 0
+all_time = 0
+count = 0
 
 
 # 弾性散乱のための変数
@@ -207,7 +211,14 @@ while ch!="q":
         dt = now-last
         ch = key.read()
         wt = time.time()
-        write_data(wt,dt,distanceL,distanceC,distanceR,wtt,wtimer,timer)
+        if timer > 0 and count < 1:
+            t_last = time.time()
+            count = + 1
+        if timer > 0:
+            count = count + 1:
+            if count >= 5:
+                all_time = time.time() - t_last
+        write_data(wt,dt,distanceL,distanceC,distanceR,wtt,wtimer,timer,all_time)
         wtt,wtimer,timer=0,0,0
     except KeyboardInterrupt:
         mR.stop()
