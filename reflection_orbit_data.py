@@ -48,6 +48,10 @@ timer=0
 adjustment=1.0
 wtimer=0
 wtt=0
+t_now = 0
+t_last = 0
+all_time = 0
+count = 0
 
 
 # 弾性散乱のための変数
@@ -219,6 +223,13 @@ while ch!="q":
         dt = now-last
         ch = key.read()
         wt = time.time()
+        if wtt > 0 and count < 1:
+            t_last = time.time()
+            count = + 1
+        if wtt > 0:
+            count = count + 1:
+            if count >= 5:
+                all_time = time.time() - t_last
         write_data(wt,dt,distanceL,distanceC,distanceR,wtimer,timer,wtt)
         wtimer,timer=0,0
         #timer=0
