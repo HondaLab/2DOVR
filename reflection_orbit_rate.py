@@ -20,19 +20,21 @@ import modules.vl53_4a as lidar  # 赤外線レーザーレーダ 3つの場合
 import modules.keyin as keyin
 import file_read as fr
 
-f1 = open('time_data4.csv','w',encoding='utf-8')
+f1 = open('time_data2.csv','w',encoding='utf-8')
 csv_writer1 = csv.writer(f1) 
 
-def write_data(t,dt,l,c,r,wtt,timer,tt,at):
+def write_data(t,dt,l,c,r,st,mt,at,tt,cc):
     write_data = []
     write_data.append(t)
     write_data.append(dt)
     write_data.append(l)
     write_data.append(c)
     write_data.append(r)
-    write_data.append(wtt)
-    write_data.append(timer)
+    write_data.append(st)
+    write_data.append(mt)
+    write_data.append(at)
     write_data.append(tt)
+    write_data.append(cc)
     csv_writer1.writerow(write_data)
 
 motor_run = "y"  # モータを回転させる場合は"y"
@@ -46,13 +48,13 @@ start_time=0
 stop_time=0
 timer=0
 adjustment=1.0
-wtt=0
-wt=0
 wtimer=0
+wtt=0
 t_now = 0
 t_last = 0
 all_time = 0
 count = 0
+gosa = 0
 
 
 # 弾性散乱のための変数
@@ -142,47 +144,63 @@ while ch!="q":
                 if past_areaL<past_areaR:
                     stop_time = time.time()
                     timer = stop_time - start_time
-                    right_timer = right_timer + timer
-                    wtt = right_timer
+                    start_time = time.time()
+                    #right_timer = right_timer + timer
                     mL.run(TURN_POWER)
                     mR.run(-TURN_POWER)
                     #time.sleep(TURN_TIME)
-                    time.sleep(adjustment*right_timer)
-                    wtimer = right_timer + (adjustment*right_timer)
-                    right_timer=0
+                    #time.sleep(adjustment*right_timer)
+                    time.sleep(adjustment*timer)
+                    #start_time,stop_time = 0,0
+                    wtimer = timer + adjustment*timer
+                    wtt = wtt + 1
+                    #right_timer=0
                 else:
                     stop_time = time.time()
                     timer = stop_time - start_time
-                    left_timer = left_timer + timer
-                    wtt = left_timer
+                    start_time = time.time()
+                    #left_timer = left_timer + timer
                     mL.run(-TURN_POWER)
                     mR.run(TURN_POWER)
                     #time.sleep(TURN_TIME)
-                    time.sleep(adjustment*left_timer)
-                    wtimer = left_timer + (adjustment*left_timer)
-                    left_timer=0
-            else:
-                mL.run(vl)
-                mR.run(vr)
+                    #time.sleep(adjustment*left_timer)
+                    time.sleep(adjustment*timer)
+                    #start_time,stop_time = 0,0
+                    wtimer = timer + adjustment*timer
+                    wtt = wtt + 1
+                    #left_timer=0
+
+            mL.run(vl)
+            mR.run(vr)
+            gosa = time.time() - start_time
+            
         else:
         #if areaL < THRESHOLD or areaR < THRESHOLD:
             if areaL<areaR:
-                if past_areaL < THRESHOLD or past_areaR < THRESHOLD:
-                    stop_time = time.time()
-                    timer = stop_time - start_time
+                #if past_areaL < THRESHOLD or past_areaR < THRESHOLD:
+                    #stop_time = time.time()
+                    #timer = stop_time - start_time
                 mL.run(TURN_POWER)
                 mR.run(-TURN_POWER)
-                start_time = time.time()
-                right_timer = right_timer + timer
+                if past_areaL >= THRESHOLD and past_areaR >= THRESHOLD:
+                    start_time = time.time()
+                if past_areaL < THRESHOLD or past_areaR < THRESHOLD:
+                    wtt = wtt + 1
+                #start_time = time.time()
+                #right_timer = right_timer + timer
                 #time.sleep(TURN_TIME)
             else:
-                if past_areaL < THRESHOLD or past_areaR < THRESHOLD:
-                    stop_time = time.time()
-                    timer = stop_time - start_time
+                #if past_areaL < THRESHOLD or past_areaR < THRESHOLD:
+                    #stop_time = time.time()
+                    #timer = stop_time - start_time
                 mL.run(-TURN_POWER)
                 mR.run(TURN_POWER)
-                start_time = time.time()
-                left_timer = left_timer + timer
+                if past_areaL >= THRESHOLD and past_areaR >= THRESHOLD:
+                    start_time = time.time()
+                if past_areaL < THRESHOLD or past_areaR < THRESHOLD:
+                    wtt = wtt + 1
+                #start_time = time.time()
+                #left_timer = left_timer + timer
                 #time.sleep(TURN_TIME)
 
         past_areaL=areaL
@@ -211,15 +229,15 @@ while ch!="q":
         dt = now-last
         ch = key.read()
         wt = time.time()
-        if timer > 0 and count < 1:
+        if wtt == 0:
             t_last = time.time()
-            count = + 1
-        if timer > 0:
-            count = count + 1:
-            if count >= 5:
-                all_time = time.time() - t_last
-        write_data(wt,dt,distanceL,distanceC,distanceR,wtt,wtimer,timer,all_time)
-        wtt,wtimer,timer=0,0,0
+        if wtt > 0:
+            count = count + 1
+            if wtimer > 0:
+                all_time = time.time() - t_last - timer
+        write_data(wt,dt,distanceL,distanceC,distanceR,wtimer,timer,wtt,all_time,gosa)
+        wtimer,timer=0,0
+        #timer=0
     except KeyboardInterrupt:
         mR.stop()
         mL.stop()
