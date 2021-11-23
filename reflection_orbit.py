@@ -120,43 +120,52 @@ while ch!="q":
                 if past_areaL<past_areaR:
                     stop_time = time.time()
                     timer = stop_time - start_time
-                    right_timer = right_timer + timer
+                    #right_timer = right_timer + timer
                     mL.run(TURN_POWER)
                     mR.run(-TURN_POWER)
                     #time.sleep(TURN_TIME)
-                    time.sleep(adjustment*right_timer)
-                    right_timer=0
+                    #time.sleep(adjustment*right_timer)
+                    time.sleep(adjustment*timer)
+                    #start_time,stop_time=0,0
+                    #right_timer=0
                 else:
                     stop_time = time.time()
                     timer = stop_time - start_time
-                    left_timer = left_timer + timer
+                    #left_timer = left_timer + timer
                     mL.run(-TURN_POWER)
                     mR.run(TURN_POWER)
                     #time.sleep(TURN_TIME)
-                    time.sleep(adjustment*left_timer)
-                    left_timer=0
-            else:
-                mL.run(vl)
-                mR.run(vr)
+                    #time.sleep(adjustment*left_timer)
+                    time.sleep(adjustment*timer)
+                    #start_time,stop_time=0,0
+                    #left_timer=0
+
+            mL.run(vl)
+            mR.run(vr)
+            
         else:
         #if areaL < THRESHOLD or areaR < THRESHOLD:
             if areaL<areaR:
-                if past_areaL < THRESHOLD or past_areaR < THRESHOLD:
-                    stop_time = time.time()
-                    timer = stop_time - start_time
+                #if past_areaL < THRESHOLD or past_areaR < THRESHOLD:
+                    #stop_time = time.time()
+                    #timer = stop_time - start_time
                 mL.run(TURN_POWER)
                 mR.run(-TURN_POWER)
-                start_time = time.time()
-                right_timer = right_timer + timer
+                if past_areaL > THRESHOLD and past_areaR > THRESHOLD:
+                    start_time = time.time()
+                #start_time = time.time()
+                #right_timer = right_timer + timer
                 #time.sleep(TURN_TIME)
             else:
-                if past_areaL < THRESHOLD or past_areaR < THRESHOLD:
-                    stop_time = time.time()
-                    timer = stop_time - start_time
+                #if past_areaL < THRESHOLD or past_areaR < THRESHOLD:
+                    #stop_time = time.time()
+                    #timer = stop_time - start_time
                 mL.run(-TURN_POWER)
                 mR.run(TURN_POWER)
-                start_time = time.time()
-                left_timer = left_timer + timer
+                if past_areaL > THRESHOLD and past_areaR > THRESHOLD:
+                    start_time = time.time()
+                #start_time = time.time()
+                #left_timer = left_timer + timer
                 #time.sleep(TURN_TIME)
 
         past_areaL=areaL
