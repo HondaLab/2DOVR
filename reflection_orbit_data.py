@@ -20,10 +20,10 @@ import modules.vl53_4a as lidar  # 赤外線レーザーレーダ 3つの場合
 import modules.keyin as keyin
 import file_read as fr
 
-f1 = open('time_data4.csv','w',encoding='utf-8')
+f1 = open('time_data2.csv','w',encoding='utf-8')
 csv_writer1 = csv.writer(f1) 
 
-def write_data(t,dt,l,c,r,st,mt,at):
+def write_data(t,dt,l,c,r,st,mt,at,tt,cc):
     write_data = []
     write_data.append(t)
     write_data.append(dt)
@@ -33,6 +33,8 @@ def write_data(t,dt,l,c,r,st,mt,at):
     write_data.append(st)
     write_data.append(mt)
     write_data.append(at)
+    write_data.append(tt)
+    write_data.append(cc)
     csv_writer1.writerow(write_data)
 
 motor_run = "y"  # モータを回転させる場合は"y"
@@ -52,6 +54,7 @@ t_now = 0
 t_last = 0
 all_time = 0
 count = 0
+gosa = 0
 
 
 # 弾性散乱のための変数
@@ -141,6 +144,7 @@ while ch!="q":
                 if past_areaL<past_areaR:
                     stop_time = time.time()
                     timer = stop_time - start_time
+                    start_time = time.time()
                     #right_timer = right_timer + timer
                     mL.run(TURN_POWER)
                     mR.run(-TURN_POWER)
@@ -154,6 +158,7 @@ while ch!="q":
                 else:
                     stop_time = time.time()
                     timer = stop_time - start_time
+                    start_time = time.time()
                     #left_timer = left_timer + timer
                     mL.run(-TURN_POWER)
                     mR.run(TURN_POWER)
@@ -167,6 +172,7 @@ while ch!="q":
 
             mL.run(vl)
             mR.run(vr)
+            gosa = time.time() - start_time
             
         else:
         #if areaL < THRESHOLD or areaR < THRESHOLD:
@@ -223,14 +229,13 @@ while ch!="q":
         dt = now-last
         ch = key.read()
         wt = time.time()
-        if wtt > 0 and count < 1:
+        if wtt == 0:
             t_last = time.time()
-            count = + 1
         if wtt > 0:
-            count = count + 1:
-            if count >= 5:
-                all_time = time.time() - t_last
-        write_data(wt,dt,distanceL,distanceC,distanceR,wtimer,timer,wtt)
+            count = count + 1
+            if wtimer > 0:
+                all_time = time.time() - t_last - timer
+        write_data(wt,dt,distanceL,distanceC,distanceR,wtimer,timer,wtt,all_time,gosa)
         wtimer,timer=0,0
         #timer=0
     except KeyboardInterrupt:
