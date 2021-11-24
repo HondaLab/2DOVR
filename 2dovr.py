@@ -111,7 +111,9 @@ gamma=0.33 # Center weight
 print("#-- #-- #-- #-- #-- #-- #-- #-- #--")
 
 lower_light,upper_light=picam.calc_hsv(select_hsv,hostname)
-time.sleep(select_sleep)
+time.sleep(15)
+print("start 5秒前")
+time.sleep(5)
 start = time.time()
 now = start
 
