@@ -36,7 +36,7 @@ MAX_SPEED = 62  # パーセント
 DT = 0.05
 dt = DT
 THRESHOLD = 0.2 
-EX_TIME = 5.3
+EX_TIME = 60*8+30
 
 def motor_out_adjust(vl,vr):
     if vl > 100:
@@ -81,7 +81,8 @@ now = start
 
 vl=0;vr=0
 ch = key.read()
-while ch!="q":
+#while ch!="q":
+while now-start < EX_TIME:
     #  実験中
     try :
         distanceL=tofL.get_distance()/1000
@@ -132,6 +133,8 @@ while ch!="q":
         now = time.time()
         dt = now-last
         ch = key.read()
+        if ch == "q":
+           break
     except KeyboardInterrupt:
         mR.stop()
         mL.stop()
