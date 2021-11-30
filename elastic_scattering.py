@@ -115,11 +115,11 @@ while ch!="q":
             if areaL<areaR:
                 mL.run(TURN_POWER)
                 mR.run(-TURN_POWER)
-                #time.sleep(TURN_TIME)
+                time.sleep(TURN_TIME)
             else:
                 mL.run(-TURN_POWER)
                 mR.run(TURN_POWER)
-                #time.sleep(TURN_TIME)
+                time.sleep(TURN_TIME)
 
         else:
             vl,vr = motor_out_adjust(MAX_SPEED,MAX_SPEED)
