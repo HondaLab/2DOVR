@@ -27,7 +27,7 @@ past_areaR=1.0
 past_areaL=1.0
 right_timer=0
 left_timer=0
-start_time=0
+start_time=time.time()
 stop_time=0
 timer=0
 adjustment=1.0
@@ -115,7 +115,7 @@ while ch!="q":
             #vl,vr = motor_out_adjust(MAX_SPEED,MAX_SPEED)
         vl,vr = motor_out_adjust(MAX_SPEED,MAX_SPEED)
 
-        if time.time() - start_time >= 0.7:
+        if (past_areaL < THRESHOLD or past_areaR < THRESHOLD) and time.time() - start_time >= 0.7:
             areaL,areaR = 0.4,0.4
 
         if areaL >= THRESHOLD and areaR >= THRESHOLD:
