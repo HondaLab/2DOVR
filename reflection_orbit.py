@@ -115,8 +115,10 @@ while ch!="q":
             #vl,vr = motor_out_adjust(MAX_SPEED,MAX_SPEED)
         vl,vr = motor_out_adjust(MAX_SPEED,MAX_SPEED)
 
+        '''
         if (past_areaL < THRESHOLD or past_areaR < THRESHOLD) and time.time() - start_time >= 0.7:
             areaL,areaR = 0.4,0.4
+        '''
 
         if areaL >= THRESHOLD and areaR >= THRESHOLD:
             if past_areaL < THRESHOLD or past_areaR < THRESHOLD:
