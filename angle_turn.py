@@ -44,7 +44,7 @@ motor_run = "y"  # モータを回転させる場合は"y"
 show_res = "y"  # モータを回転させる場合は"y"
 
 # 弾性散乱のための変数
-TURN_TIME=1.24
+TURN_TIME=1.25
 TURN_POWER=100
 
 SLEEP = 0.05
