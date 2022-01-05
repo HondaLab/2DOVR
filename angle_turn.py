@@ -129,12 +129,12 @@ while ch!="q":
                 c = (distanceL + side) * math.cos(math.radians(45))
                 theta = math.fabs(math.degrees(math.atan(c/((distanceC + center) - c))))
                 Time = TURN_TIME * (theta/90)
-                #phai = 90 - theta
+                #phi = 90 - theta
             else:
                 c = (distanceR + side) * math.cos(math.radians(45))
                 theta = math.fabs(math.degrees(math.atan(c/((distanceC + center) - c))))
                 Time = TURN_TIME * (theta/90)
-                #phai = 90 - theta
+                #phi = 90 - theta
         
         # vl,vrは2次元最適速度モデルで決定される速度
         if areaL < THRESHOLD or areaR < THRESHOLD:
