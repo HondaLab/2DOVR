@@ -43,6 +43,9 @@ def write_data(t,l,c,r):
 motor_run = "y"  # モータを回転させる場合は"y"
 show_res = "y"  # モータを回転させる場合は"y"
 
+theta = 0
+phi = 0
+
 # 弾性散乱のための変数
 TURN_TIME=1.25
 TURN_POWER=100
@@ -163,11 +166,15 @@ while ch!="q":
             print(" dR=%6.2f " % distanceR, end="")
             print(" areaL=%6.2f " % areaL, end="")
             print(" areaR=%6.2f " % areaR, end="")
+            print(" theta=%6.2f " % theta, end="")
+            #print(" phi=%6.2f " % phi, end="")
 
         if motor_run == 'y':
             mL.run(vl)
             mR.run(vr)
 
+        theta = 0
+        phi = 0
         time.sleep(DT)
         last = now
         now = time.time()
