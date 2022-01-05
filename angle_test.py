@@ -178,8 +178,8 @@ while ch!="q":
             mR.run(vr)
 
         '''
-        theta = 0
-        phi = 0
+        #theta = 0
+        #phi = 0
         time.sleep(DT)
         last = now
         now = time.time()
