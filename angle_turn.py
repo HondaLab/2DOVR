@@ -22,8 +22,12 @@ import file_read as fr
 
 
 
-side = 7.7/100
-center = 5.7/100
+side = 7.7
+center = 5.7
+
+
+side = side/100
+center = center/100
 
 f1 = open('time_distance_data.csv','w',encoding='utf-8')
 csv_writer1 = csv.writer(f1) 
