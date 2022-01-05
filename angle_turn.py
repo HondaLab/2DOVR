@@ -22,8 +22,8 @@ import file_read as fr
 
 
 
-side = 7.5/100
-center = 6/100
+side = 7.7/100
+center = 5.7/100
 
 f1 = open('time_distance_data.csv','w',encoding='utf-8')
 csv_writer1 = csv.writer(f1) 
@@ -40,7 +40,7 @@ motor_run = "y"  # モータを回転させる場合は"y"
 show_res = "y"  # モータを回転させる場合は"y"
 
 # 弾性散乱のための変数
-TURN_TIME=0.3
+TURN_TIME=1.24
 TURN_POWER=100
 
 SLEEP = 0.05
@@ -124,12 +124,12 @@ while ch!="q":
             if areaL < areaR:
                 c = (distanceL + side) * math.cos(math.radians(45))
                 theta = math.fabs(math.degrees(math.atan(c/((distanceC + center) - c))))
-                Time = 1.3 * (theta/90)
+                Time = TURN_TIME * (theta/90)
                 #phai = 90 - theta
             else:
                 c = (distanceR + side) * math.cos(math.radians(45))
                 theta = math.fabs(math.degrees(math.atan(c/((distanceC + center) - c))))
-                Time = 1.3 * (theta/90)
+                Time = TURN_TIME * (theta/90)
                 #phai = 90 - theta
         
         # vl,vrは2次元最適速度モデルで決定される速度
