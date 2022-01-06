@@ -129,13 +129,13 @@ while ch!="q":
         
         if areaL < THRESHOLD or areaR < THRESHOLD:
             if areaL < areaR:
-                c = (distanceL + side) * math.cos(math.radians(45))
-                theta = math.fabs(math.degrees(math.atan(c/((distanceC + center) - c))))
+                a = (distanceL + side) * math.cos(math.radians(45))
+                theta = math.fabs(math.degrees(math.atan(a/((distanceC + center) - a))))
                 Time = TURN_TIME * (theta/90)
                 #phi = 90 - theta
             else:
-                c = (distanceR + side) * math.cos(math.radians(45))
-                theta = math.fabs(math.degrees(math.atan(c/((distanceC + center) - c))))
+                a = (distanceR + side) * math.cos(math.radians(45))
+                theta = math.fabs(math.degrees(math.atan(a/((distanceC + center) - a))))
                 Time = TURN_TIME * (theta/90)
                 #phi = 90 - theta
         
