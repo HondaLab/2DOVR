@@ -36,7 +36,7 @@ MAX_SPEED = 62  # パーセント
 DT = 0.05
 dt = DT
 THRESHOLD = 0.2 
-EX_TIME = 60*8+30
+EX_TIME = 60*10+5
 
 def motor_out_adjust(vl,vr):
     if vl > 100:
