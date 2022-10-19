@@ -31,7 +31,7 @@ THRESHOLD = 0.3 # OVMをon/offするための閾値
 
 # UDP ソケットインスタンス
 mt_str_udp=sk.UDP_Recv(sk.robot,sk.motor_port)
-2dovr_udp=sk.UDP_Recv(sk.robot,sk.2dovr_port)
+vlvr_udp=sk.UDP_Recv(sk.robot,sk.vlvr_port)
 
 
 # 弾性散乱用の感覚運動写像
@@ -88,7 +88,7 @@ ch='c'
 vl=0;vr=0
 while ch!='q':
     try:
-        data=2dov_udp.recv()
+        data=vlvr_udp.recv()
         vl=data[0]
         vr=data[1]
     except (BlockingIOError, socket.error):
