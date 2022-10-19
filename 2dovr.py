@@ -16,6 +16,7 @@ import numpy as np
 #  Pythonファイルインポート 
 import modules.motor5a as mt         #  (改良版)モーターを回転させるためのモジュール
 import modules.vl53_4a as lidar     #  赤外線レーザーレーダ 3つの場合
+import modules.socket as sk
 
 #sokcet 通信関係 
 import socket
