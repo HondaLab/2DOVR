@@ -54,7 +54,6 @@ def sgn(x):
 
 # Optimal Velocity model
 class Optimal_Velocity_class:
-    #インスタンス生成
     def __init__(self,parm):
         self.vs = parm[0]    #相互作用なしで動き続けるための項 
         self.a = parm[1]     #感応度
@@ -90,12 +89,11 @@ class Optimal_Velocity_class:
         large_v_x = (1+cos(theta)) * f_rkj * nx
         large_v_y = (1+cos(theta)) * f_rkj * ny
 
-        ax = self.a * (self.vs + large_v_x - self.vx)
-        ay = self.a * (self.vs + large_v_y - self.vy)
+        ax = self.a * (large_v_x - self.vx)
+        ay = self.a * (large_v_y - self.vy)
 
         self.vx = self.vx + dt * ax
         self.vy = self.vy + dt * ay
-
 
         omega=math.atan(self.vx/self.vy)
 
