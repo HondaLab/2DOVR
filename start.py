@@ -7,6 +7,9 @@ from subprocess import Popen
 import cv2
 import socket
 import time
+import csv
+import datetime
+import platform
 
 PERIOD=0.2 # 'q'を送信する周期 1/rate
 SLEEP=0.02
@@ -47,12 +50,28 @@ picam_process=Popen(cmd.strip().split(' '))
 
 # ------ 2dovr関連UDPインスタンスとコマンド --------
 mt_str_udp=sk.UDP_Send(sk.robot,sk.motor_port)
-2dovr_udp=sk.UDP_Send(sk.robot,sk.2dovr_port)
+vlvr_udp=sk.UDP_Send(sk.robot,sk.vlvr_port)
 cmd='ssh pi@'+sk.robot+' 2DOVR/2dovr.py &'
 # 実行後に"&"をつけないと，local(このプログラム)がキーボードを受け付けない．
 #robot_process=Popen(cmd.strip().split(' '))
-data=[]
+data=[0.0,0.0]
 # --------------------------------------------------
+
+# ---- thetaの値をファイルに保存するため -----
+ex_start_time = datetime.datetime.now()
+ex_start_time = str(ex_start_time.strftime('%Y%m%d%H%M%S'))
+ex_start_time = ex_start_time.replace("'",'')
+ex_start_time = ex_start_time.replace(" ",'')
+hostname = '[%s]' % platform.uname()[1]
+hostname = hostname.replace("[",'')
+hostname = hostname.replace("]",'')
+
+write_file = str(hostname) + "-" +str(ex_start_time) + ".txt"
+print(write_file)
+
+write_fp = open("result/"+write_file,"w")
+write_fp.write("#"+hostname+"\n")
+# ---------------------------------------------
 
 print('Waiting for frame from picam on robot.')
 recv=0
@@ -116,10 +135,10 @@ while ch!='q':
             mode = "picam"
             dist = float(dist)
         vl, vr, omega = ov.calc(dist,theta,dt)
-        data.append(vl)
-        data.append(vr)
-        2dovr_udp.send(data)
-        data.clear()
+        data[0]=vl
+        data[1]=vr
+        vlvr_udp.send(data)
+        #data.clear()
         
         vw.write(frame)
         cnt+=1
@@ -137,7 +156,15 @@ while ch!='q':
         mt_str_udp.send_str(ch) 
         rate=cnt/(now-start)
         if dist!=None and theta!=None:
-           print("\r %5.2f %5.2f %5.2f %5.2f" % (now-init,rate,dist,theta),end='')
+           print("\r time=%5.2f sec" % (now-init), end='')
+           print(" rate=%6.2f" % rate, end='')
+           print(" dist=%6.2f" % dist, end='')
+           print(" theta=%6.2f" % theta, end='')
+           print(" ovL=%6.2f" % vl, end='')
+           print(" ovR=%6.2f" % vr, end='')
+           write_fp.write(str('{:.2g}'.format(now-init))+", ")
+           write_fp.write(str(theta) + ", ")
+           write_fp.write("\n")
         else:
            print("\r %5.2f %5.2f" % (now-init,rate),end='')
 
@@ -148,6 +175,7 @@ while ch!='q':
     #time.sleep(SLEEP)
 
 vw.release()        
+write_fp.close()
 
 print("bye-bye")
 
