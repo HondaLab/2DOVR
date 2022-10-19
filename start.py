@@ -2,6 +2,7 @@
 import modules.socket as sk
 import modules.keyin as keyin
 import calc_dist_theta
+import ovm
 from subprocess import Popen
 import cv2
 import socket
@@ -12,6 +13,30 @@ SLEEP=0.02
 imshow='y'
 select_hsv='y'
 
+# 実験パラメータ読み込み
+FILE = "parm_ovm.csv" 
+def Parameter_read(fp):
+    tmp = []
+    reader = csv.reader(fp)
+    header = next(reader)
+    for row in reader:
+        if len(row) == 0:
+           pass 
+        else:
+            tmp.append(float(row[0]))
+            tmp.append(float(row[1]))
+            tmp.append(float(row[2]))
+            tmp.append(float(row[3]))
+            tmp.append(float(row[4]))
+            tmp.append(float(row[5]))
+    return tmp
+#  パラメータ読み込み
+file_pointer = open(FILE,'r')
+parm = Parameter_read(file_pointer)
+
+# 最適速度インスタンス
+ov = ovm.Optimal_Velocity_class(parm) 
+
 # ------picam --------
 str_udp=sk.UDP_Send(sk.robot,sk.cam_port)
 cam_udp=sk.UDP_Recv(sk.pc,sk.cam_port)
@@ -20,14 +45,14 @@ cmd='ssh pi@'+sk.robot+' 2DOVR/picam.py &'
 picam_process=Popen(cmd.strip().split(' '))
 # --------------------
 
-# ------ 2dovr --------
+# ------ 2dovr関連UDPインスタンスとコマンド --------
 mt_str_udp=sk.UDP_Send(sk.robot,sk.motor_port)
-dist_udp=sk.UDP_Send(sk.robot,sk.dist_port)
+2dovr_udp=sk.UDP_Send(sk.robot,sk.2dovr_port)
 cmd='ssh pi@'+sk.robot+' 2DOVR/2dovr.py &'
 # 実行後に"&"をつけないと，local(このプログラム)がキーボードを受け付けない．
 #robot_process=Popen(cmd.strip().split(' '))
 data=[]
-# --------------------------
+# --------------------------------------------------
 
 print('Waiting for frame from picam on robot.')
 recv=0
@@ -74,16 +99,26 @@ init=now
 ch='c'
 cnt=0
 rate=30.0
-print("データを受信するには，recv_data.pyを実行してください．")
 print("'q'を入力すると終了します．(Input 'q' to quit.)")
 while ch!='q':
+    last = now
+    now = time.time()
+    dt = now-last
 
     try:
         frame=cam_udp.recv_img()
         dist,theta=picam_frame.calc(frame,lower,upper)
-        data.append(dist)
-        data.append(theta)
-        #dist_udp.send(data)
+        if dist == None:
+            dist = float(2000)
+            theta = 0.0
+        else:
+            # pixyカメラで物体を認識している時
+            mode = "picam"
+            dist = float(dist)
+        vl, vr, omega = ov.calc(dist,theta,dt)
+        data.append(vl)
+        data.append(vr)
+        2dovr_udp.send(data)
         data.clear()
         
         vw.write(frame)
@@ -96,7 +131,6 @@ while ch!='q':
     except (BlockingIOError, socket.error):
         pass
 
-    now=time.time()
     if now-start>PERIOD:
         ch=key.read()
         str_udp.send_str(ch) # レイトを落として周期的にchを送信
@@ -109,6 +143,7 @@ while ch!='q':
 
         cnt=0
         start=now
+
 
     #time.sleep(SLEEP)
 
