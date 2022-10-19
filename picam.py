@@ -15,7 +15,6 @@ import socket
 #import socket1a as sk
 
 
-
 class PI_CAMERA_CLASS():
    def __init__(self):
       #self.udp = sk.UDP_Send(MY_IP, sk.PICAM_PORT)
@@ -77,7 +76,7 @@ class PI_CAMERA_CLASS():
       #print(frame)
       hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
       mask = cv2.inRange(hsv, lower, upper)
-      image, contours, hierarchy  = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+      contours, hierarchy  = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
       rects = []
       for contour in contours:
          approx = cv2.convexHull(contour)
@@ -146,7 +145,7 @@ class PI_CAMERA_CLASS():
        
 
 if __name__ == "__main__":
-    select_hsv="n"     
+    select_hsv="y"     
     picam = PI_CAMERA_CLASS()
     count = 0
     if select_hsv=='y':
@@ -162,8 +161,9 @@ if __name__ == "__main__":
         try: 
             #picam.calc_dist_theta(lower_light,upper_light)
             dis, rad, frame = picam.calc_dist_theta(lower_light, upper_light)
+            print("\r %5.2f %5.2f" % (dis,rad),end='')
             cv2.imshow("test", frame)
-            cv2.waitKey(3)
+            cv2.waitKey(1)
         except KeyboardInterrupt:
             print("ctrl + C ")
             cv2.destroyAllWindows()
