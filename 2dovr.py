@@ -25,10 +25,8 @@ import modules.vl53_4a as lidar     #  赤外線レーザーレーダ 3つの場
 #sokcet 通信関係 
 import socket
 
-
-
 select_hsv = "y"
-motor_run = "y"
+motor_run = "n"
 imshow = "y"
 
 SLEEP = 0.2
