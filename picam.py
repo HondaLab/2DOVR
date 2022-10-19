@@ -19,8 +19,8 @@ PERIOD=0.2
 cam = PiCamera()
 cam.framerate = 30
 cam.awb_mode='auto'
-cam.iso=200
-cam.shutter_speed=100000
+cam.iso=800
+cam.shutter_speed=1000000
 cam.exposure_mode = 'auto' # off, auto, fixedfps
 time.sleep(1)
 g = cam.awb_gains
