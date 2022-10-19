@@ -48,14 +48,6 @@ cmd='ssh pi@'+sk.robot+' 2DOVR/picam.py &'
 picam_process=Popen(cmd.strip().split(' '))
 # --------------------
 
-# ------ 2dovr関連UDPインスタンスとコマンド --------
-mt_str_udp=sk.UDP_Send(sk.robot,sk.motor_port)
-vlvr_udp=sk.UDP_Send(sk.robot,sk.vlvr_port)
-cmd='ssh pi@'+sk.robot+' 2DOVR/2dovr.py &'
-# 実行後に"&"をつけないと，local(このプログラム)がキーボードを受け付けない．
-#robot_process=Popen(cmd.strip().split(' '))
-data=[0.0,0.0]
-# --------------------------------------------------
 
 # ---- thetaの値をファイルに保存するため -----
 ex_start_time = datetime.datetime.now()
@@ -111,6 +103,15 @@ else:
     lower = np.array([H-h_range, S-s_range, V-v_range])
     upper = np.array([H+h_range, S+s_range, V+v_range])
 
+# ------ 2dovr関連UDPインスタンスとコマンド --------
+mt_str_udp=sk.UDP_Send(sk.robot,sk.motor_port)
+vlvr_udp=sk.UDP_Send(sk.robot,sk.vlvr_port)
+cmd='ssh pi@'+sk.robot+' 2DOVR/2dovr.py &'
+# 実行後に"&"をつけないと，local(このプログラム)がキーボードを受け付けない．
+robot_process=Popen(cmd.strip().split(' '))
+data=[0.0,0.0]
+# --------------------------------------------------
+
 key=keyin.Keyboard()
 now=time.time()
 start=now
@@ -120,9 +121,6 @@ cnt=0
 rate=30.0
 print("'q'を入力すると終了します．(Input 'q' to quit.)")
 while ch!='q':
-    last = now
-    now = time.time()
-    dt = now-last
 
     try:
         frame=cam_udp.recv_img()
@@ -134,6 +132,9 @@ while ch!='q':
             # pixyカメラで物体を認識している時
             mode = "picam"
             dist = float(dist)
+        last = now
+        now = time.time()
+        dt = now-last
         vl, vr, omega = ov.calc(dist,theta,dt)
         data[0]=vl
         data[1]=vr
@@ -160,6 +161,7 @@ while ch!='q':
            print(" rate=%6.2f" % rate, end='')
            print(" dist=%6.2f" % dist, end='')
            print(" theta=%6.2f" % theta, end='')
+           print(" dt=%8.4f" % dt, end='')
            print(" ov_L=%6.2f" % vl, end='')
            print(" ov_R=%6.2f" % vr, end='')
            write_fp.write(str('{:.2g}'.format(now-init))+", ")
