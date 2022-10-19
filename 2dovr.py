@@ -1,8 +1,5 @@
 #! /usr/bin/python3
-#  Yasushi Honda 2021 5/27
-#  2dovr_210513.py
-#  2021-04-16
-#  Masashi Yamada
+#  Yasushi Honda 2022 10/19
 
 #  各モジュールインポート
 import csv
@@ -21,7 +18,8 @@ import modules.socket as sk
 #sokcet 通信関係 
 import socket
 
-motor_run = "y"
+motor_run = "n"
+PERIOD=0.2
 
 GPIO_L = 17     # 左モーターのgpio 17番
 GPIO_R = 18     # 右モーターのgpio 18番
@@ -68,8 +66,8 @@ hostname = hostname.replace("]",'')
 write_file = str(hostname) + "-" +str(ex_start_time) + ".txt"
 print(write_file)
 
-#write_fp = open("/home/pi/2DOVR/result/"+write_file,"w")
-#write_fp.write("#"+hostname+"\n")
+write_fp = open("/home/pi/2DOVR/result/"+write_file,"w")
+write_fp.write("#"+hostname+"\n")
 
 
 #  インスタンス生成
@@ -79,73 +77,71 @@ print("VL53L0X 接続完了\n")
 mL=mt.Lmotor(GPIO_L)         #  左モーター(gpio17番)
 mR=mt.Rmotor(GPIO_R)         #  右モーター(gpio18番)
 
-count = 0
-data = []
+cnt = 0
+data = [0,0]
 gamma=0.33 # Center weight
 
 now = time.time()
 start = now
+init=now
 ch='c'
 vl=0;vr=0
+ovL=0;ovR=0
 while ch!='q':
     try:
         data=vlvr_udp.recv()
-        vl=data[0]
-        vr=data[1]
+        ovL=data[0]
+        ovR=data[1]
+        cnt+=1
     except (BlockingIOError, socket.error):
         pass
 
-    try :
-        lidar_distanceL=tofL.get_distance()/1000
-        if lidar_distanceL>2:
-            lidar_distanceL=2
+    lidar_distanceL=tofL.get_distance()/1000
+    if lidar_distanceL>2:
+        lidar_distanceL=2
 
-        lidar_distanceC=tofC.get_distance()/1000
-        if lidar_distanceC>2:
-            lidar_distanceC=2
+    lidar_distanceC=tofC.get_distance()/1000
+    if lidar_distanceC>2:
+        lidar_distanceC=2
            
-        lidar_distanceR=tofR.get_distance()/1000
-        if lidar_distanceR>2:
-            lidar_distanceR=2
+    lidar_distanceR=tofR.get_distance()/1000
+    if lidar_distanceR>2:
+        lidar_distanceR=2
 
-        if lidar_distanceL>0 and lidar_distanceC>0:
-            areaL=math.exp(gamma*math.log(lidar_distanceC))*math.exp((1-gamma)*math.log(lidar_distanceL))
-        if lidar_distanceR>0 and lidar_distanceC>0:
-            areaR=math.exp(gamma*math.log(lidar_distanceC))*math.exp((1-gamma)*math.log(lidar_distanceR))
+    if lidar_distanceL>0 and lidar_distanceC>0:
+        areaL=math.exp(gamma*math.log(lidar_distanceC))*math.exp((1-gamma)*math.log(lidar_distanceL))
+    if lidar_distanceR>0 and lidar_distanceC>0:
+        areaR=math.exp(gamma*math.log(lidar_distanceC))*math.exp((1-gamma)*math.log(lidar_distanceR))
 
-        tof_r = tanh1(areaL)
-        tof_l = tanh2(areaR)
+    tof_r = tanh1(areaL)
+    tof_l = tanh2(areaR)
 
-        '''
-        print("\r %6.2f " % (now-start),end="")
-        #print(" dist=%6.2f " % dist, end="")
-        #print(" theta=%6.2f " % theta, end="")
-        print(" v_L=%6.2f " % vl, end="")
-        print(" v_R=%6.2f " % vr, end="")
-        print(" dL=%6.2f " % lidar_distanceL, end="")
-        print(" dC=%6.2f " % lidar_distanceC, end="")
-        print(" dR=%6.2f " % lidar_distanceR, end="")
-        #write_fp.write(str('{:.2g}'.format(now-start))+", ")
-        #write_fp.write(str(theta) + ", ")
-        #write_fp.write("\n")
-        '''
+    now=time.time()
+    if now-start>PERIOD:
+       rate=cnt/(now-start)
+       print("\r %6.2f " % (now-init),end="")
+       print(" rate=%6.2f " % rate, end="")
+       print(" ov_L=%6.2f " % ovL, end="")
+       print(" ov_R=%6.2f " % ovR, end="")
+       print(" dL=%6.2f " % lidar_distanceL, end="")
+       print(" dC=%6.2f " % lidar_distanceC, end="")
+       print(" dR=%6.2f " % lidar_distanceR, end="")
+       write_fp.write(str('{:.2g}'.format(now-start))+", ")
+       write_fp.write(str(theta) + ", ")
+       write_fp.write("\n")
+       cnt=0
+       start=now
 
-        if areaL < THRESHOLD or areaR < THRESHOLD:
-            vl = 1.0
-            vr = 1.0
-        
-        vl = vl * tof_l * MAX_SPEED 
-        vr = vr * tof_r * MAX_SPEED
+    if areaL < THRESHOLD or areaR < THRESHOLD:
+        ovL = 1.0
+        ovR = 1.0
+       
+    vl = ovL * tof_l * MAX_SPEED 
+    vr = ovR * tof_r * MAX_SPEED
 
-        if motor_run == 'y':
-            mL.run(vl)
-            mR.run(vr)
-    except KeyboardInterrupt:
-        mR.stop()
-        mL.stop()
-        write_fp.close()
-        #print("Ctrl + C button pressed")
-        sys.exit("\nsystem exit ! \n")
+    if motor_run == 'y':
+        mL.run(vl)
+        mR.run(vr)
 
     try:
        ch=mt_str_udp.recv_str()
@@ -154,7 +150,7 @@ while ch!='q':
     
 mR.stop()
 mL.stop()
-#write_fp.close()
+write_fp.close()
 print("#-- #-- #-- #-- #-- #-- #-- #-- #--")
 """
 print()
