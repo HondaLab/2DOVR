@@ -12,8 +12,8 @@ import modules.socket as sk
 
 RES_X=int( 320 )
 RES_Y=int( 240 )
-view_upper=0
-view_lower=240
+view_upper=120
+view_lower=190
 PERIOD=0.2
 
 cam = PiCamera()
