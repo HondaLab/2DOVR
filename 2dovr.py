@@ -6,8 +6,6 @@ import csv
 import time
 import math
 import sys
-import datetime
-import platform
 
 import numpy as np
 #  Pythonファイルインポート 
@@ -53,21 +51,6 @@ def tanh2(x):
     c=0.0
     f=(alpha*math.tanh(beta*(x-b)) + alpha2*math.tanh(beta2*(x-b))+c) / (alpha + alpha2 + c)
     return f
-
-ex_start_time = datetime.datetime.now()
-ex_start_time = str(ex_start_time.strftime('%Y%m%d%H%M%S'))
-ex_start_time = ex_start_time.replace("'",'')
-ex_start_time = ex_start_time.replace(" ",'')
-
-hostname = '[%s]' % platform.uname()[1]
-hostname = hostname.replace("[",'')
-hostname = hostname.replace("]",'')
-
-write_file = str(hostname) + "-" +str(ex_start_time) + ".txt"
-print(write_file)
-
-write_fp = open("/home/pi/2DOVR/result/"+write_file,"w")
-write_fp.write("#"+hostname+"\n")
 
 
 #  インスタンス生成
@@ -126,9 +109,6 @@ while ch!='q':
        print(" dL=%6.2f " % lidar_distanceL, end="")
        print(" dC=%6.2f " % lidar_distanceC, end="")
        print(" dR=%6.2f " % lidar_distanceR, end="")
-       write_fp.write(str('{:.2g}'.format(now-start))+", ")
-       write_fp.write(str(theta) + ", ")
-       write_fp.write("\n")
        cnt=0
        start=now
 
@@ -150,7 +130,6 @@ while ch!='q':
     
 mR.stop()
 mL.stop()
-write_fp.close()
 print("#-- #-- #-- #-- #-- #-- #-- #-- #--")
 """
 print()
