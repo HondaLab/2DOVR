@@ -7,7 +7,7 @@ import cv2
 import socket
 import time
 
-PERIOD=0.1 # 'q'を送信する周期 1/rate
+PERIOD=0.2 # 'q'を送信する周期 1/rate
 SLEEP=0.02
 imshow='y'
 select_hsv='y'
@@ -89,7 +89,7 @@ while ch!='q':
         vw.write(frame)
         cnt+=1
         if imshow=='y':
-            show=cv2.resize(frame,(800,480))
+            show=cv2.resize(frame,(800,300))
             #ax.imshow(show,extent=[*xlim,*ylim], aspect='auto',alpha=0.6)
             cv2.imshow("frame",show)
             cv2.waitKey(1)
