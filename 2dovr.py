@@ -95,9 +95,33 @@ while ch!='q':
         areaL=math.exp(gamma*math.log(lidar_distanceC))*math.exp((1-gamma)*math.log(lidar_distanceL))
     if lidar_distanceR>0 and lidar_distanceC>0:
         areaR=math.exp(gamma*math.log(lidar_distanceC))*math.exp((1-gamma)*math.log(lidar_distanceR))
-
+    '''
+    # tanh関数を使った擬弾性散乱
     tof_r = tanh1(areaL)
     tof_l = tanh2(areaR)
+    if areaL < THRESHOLD or areaR < THRESHOLD:
+        ovL = 1.0
+        ovR = 1.0
+    vl = ovL * tof_l * MAX_SPEED 
+    vr = ovR * tof_r * MAX_SPEED
+    '''
+    # 一定時間の擬弾性散乱
+    if areaL <= THRESHOLD or areaR <= THRESHOLD:
+        if areaL<areaR:
+            mL.run(TURN_POWER)
+            mR.run(-TURN_POWER)
+            time.sleep(TURN_TIME)
+        else:
+            mL.run(-TURN_POWER)
+            mR.run(TURN_POWER)
+            time.sleep(TURN_TIME)
+    else:
+       vl = ovL * MAX_SPEED 
+       vr = ovR * MAX_SPEED
+
+    if motor_run == 'y':
+        mL.run(vl)
+        mR.run(vr)
 
     now=time.time()
     if now-start>PERIOD:
@@ -111,17 +135,6 @@ while ch!='q':
        print(" dR=%6.2f " % lidar_distanceR, end="")
        cnt=0
        start=now
-
-    if areaL < THRESHOLD or areaR < THRESHOLD:
-        ovL = 1.0
-        ovR = 1.0
-       
-    vl = ovL * tof_l * MAX_SPEED 
-    vr = ovR * tof_r * MAX_SPEED
-
-    if motor_run == 'y':
-        mL.run(vl)
-        mR.run(vr)
 
     try:
        ch=mt_str_udp.recv_str()
