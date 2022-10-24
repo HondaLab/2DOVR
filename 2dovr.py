@@ -29,6 +29,7 @@ THRESHOLD = 0.3 # OVMをon/offするための閾値
 # UDP ソケットインスタンス
 mt_str_udp=sk.UDP_Recv(sk.robot,sk.motor_port)
 vlvr_udp=sk.UDP_Recv(sk.robot,sk.vlvr_port)
+tof_udp=sk.UDP_Recv(sk.robot,sk.tof_port)
 
 
 # 弾性散乱用の感覚運動写像
@@ -54,14 +55,11 @@ def tanh2(x):
 
 
 #  インスタンス生成
-tofL,tofR,tofC=lidar.start() #  赤外線レーザ(3)
-#tofL,tofR=lidar.start()       #  赤外線レーザ(2)
-print("VL53L0X 接続完了\n")
 mL=mt.Lmotor(GPIO_L)         #  左モーター(gpio17番)
 mR=mt.Rmotor(GPIO_R)         #  右モーター(gpio18番)
 
 cnt = 0
-data = [0,0]
+data = [0,0,0]
 gamma=0.33 # Center weight
 
 now = time.time()
@@ -79,22 +77,18 @@ while ch!='q':
     except (BlockingIOError, socket.error):
         pass
 
-    lidar_distanceL=tofL.get_distance()/1000
-    if lidar_distanceL>2:
-        lidar_distanceL=2
+    try:
+        data=tof_udp.recv()
+        left=data[0]/1000
+        right=data[1]/1000
+        center=data[2]/1000
+    except (BlockingIOError, socket.error):
+        pass
 
-    lidar_distanceC=tofC.get_distance()/1000
-    if lidar_distanceC>2:
-        lidar_distanceC=2
-           
-    lidar_distanceR=tofR.get_distance()/1000
-    if lidar_distanceR>2:
-        lidar_distanceR=2
-
-    if lidar_distanceL>0 and lidar_distanceC>0:
-        areaL=math.exp(gamma*math.log(lidar_distanceC))*math.exp((1-gamma)*math.log(lidar_distanceL))
-    if lidar_distanceR>0 and lidar_distanceC>0:
-        areaR=math.exp(gamma*math.log(lidar_distanceC))*math.exp((1-gamma)*math.log(lidar_distanceR))
+    if left>0 and center>0:
+        areaL=math.exp(gamma*math.log(center))*math.exp((1-gamma)*math.log(left))
+    if right>0 and center>0:
+        areaR=math.exp(gamma*math.log(center))*math.exp((1-gamma)*math.log(right))
     '''
     # tanh関数を使った擬弾性散乱
     tof_r = tanh1(areaL)
