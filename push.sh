@@ -1,7 +1,7 @@
 #!/usr/bin/sh
 # pushを自動化するスクリプト
-file=tof.py
-comment="tof距離センサー用"
+file=2dovr.py
+comment="tof値をudpで受け取る"
 git add $file
 sleep 2
 git commit -m "$comment"
