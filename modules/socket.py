@@ -9,12 +9,12 @@ calc = '172.16.8.181' # 計算サーバ
 
 # １つの計算サーバで recv_data.py / calc_nn_h1.py を
 # 複数動かす場合は，以下のポート番号の重複を避ける.
-vlvr_port = 60001
-tof_port = 60002
-motor_port = 60003
-cam_port = 60004
-svd_port = 60005
-recv_port = 60006
+vlvr_port = 50001
+tof_port = 50002
+motor_port = 50003
+cam_port = 50004
+svd_port = 50005
+recv_port = 50006
 
 class UDP_Send():
     def __init__(self,addr,port):
