@@ -16,7 +16,7 @@ import modules.socket as sk
 #sokcet 通信関係 
 import socket
 
-motor_run = "n"
+motor_run = "y"
 PERIOD=0.2
 
 GPIO_L = 17     # 左モーターのgpio 17番
@@ -31,7 +31,7 @@ TURN_POWER=100
 # UDP ソケットインスタンス
 mt_str_udp=sk.UDP_Recv(sk.robot,sk.motor_port)
 vlvr_udp=sk.UDP_Recv(sk.robot,sk.vlvr_port)
-tof_udp=sk.UDP_Recv(sk.robot,sk.tof_port)
+area_udp=sk.UDP_Recv(sk.robot,sk.area_port)
 
 
 # 弾性散乱用の感覚運動写像
@@ -76,34 +76,18 @@ ovL=0;ovR=0
 while ch!='q':
     try:
         data=vlvr_udp.recv()
+        cnt+=1
         ovL=data[0]
         ovR=data[1]
     except (BlockingIOError, socket.error):
         pass
 
     try:
-        data=tof_udp.recv()
-        cnt+=1
-        left=data[0]/1000
-        right=data[1]/1000
-        center=data[2]/1000
-
-        if left>0 and center>0:
-            areaL=math.exp(gamma*math.log(center))*math.exp((1-gamma)*math.log(left))
-        if right>0 and center>0:
-            areaR=math.exp(gamma*math.log(center))*math.exp((1-gamma)*math.log(right))
+        data=area_udp.recv()
+        areaL=data[0]
+        areaR=data[1]
 
         '''
-        # tanh関数を使った擬弾性散乱
-        tof_r = tanh1(areaL)
-        tof_l = tanh2(areaR)
-        if areaL < THRESHOLD or areaR < THRESHOLD:
-            ovL = 1.0
-            ovR = 1.0
-        vl = ovL * tof_l * MAX_SPEED 
-        vr = ovR * tof_r * MAX_SPEED
-        '''
-
         now=time.time()
         if now-start>PERIOD:
             rate=cnt/(now-start)
@@ -111,11 +95,11 @@ while ch!='q':
             print(" rate=%6.2f " % rate, end="")
             print(" ov_L=%6.2f " % ovL, end="")
             print(" ov_R=%6.2f " % ovR, end="")
-            print(" dL=%6.2f " % left, end="")
-            print(" dC=%6.2f " % center, end="")
-            print(" dR=%6.2f " % right, end="")
+            print(" areaL=%6.2f " % areaL, end="")
+            print(" areaR=%6.2f " % areaR, end="")
             cnt=0
             start=now
+        '''
 
     except (BlockingIOError, socket.error): # tof recv
         pass
