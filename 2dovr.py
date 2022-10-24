@@ -25,6 +25,8 @@ MAX_SPEED = 62  # パーセント
 DT = 0.1
 dt = DT
 THRESHOLD = 0.3 # OVMをon/offするための閾値
+TURN_TIME=0.3
+TURN_POWER=100
 
 # UDP ソケットインスタンス
 mt_str_udp=sk.UDP_Recv(sk.robot,sk.motor_port)
@@ -62,6 +64,9 @@ cnt = 0
 data = [0,0,0]
 gamma=0.33 # Center weight
 
+areaL=1.0
+areaR=1.0
+
 now = time.time()
 start = now
 init=now
@@ -73,62 +78,64 @@ while ch!='q':
         data=vlvr_udp.recv()
         ovL=data[0]
         ovR=data[1]
-        cnt+=1
     except (BlockingIOError, socket.error):
         pass
 
     try:
         data=tof_udp.recv()
+        cnt+=1
         left=data[0]/1000
         right=data[1]/1000
         center=data[2]/1000
-    except (BlockingIOError, socket.error):
+
+        if left>0 and center>0:
+            areaL=math.exp(gamma*math.log(center))*math.exp((1-gamma)*math.log(left))
+        if right>0 and center>0:
+            areaR=math.exp(gamma*math.log(center))*math.exp((1-gamma)*math.log(right))
+
+        '''
+        # tanh関数を使った擬弾性散乱
+        tof_r = tanh1(areaL)
+        tof_l = tanh2(areaR)
+        if areaL < THRESHOLD or areaR < THRESHOLD:
+            ovL = 1.0
+            ovR = 1.0
+        vl = ovL * tof_l * MAX_SPEED 
+        vr = ovR * tof_r * MAX_SPEED
+        '''
+
+        now=time.time()
+        if now-start>PERIOD:
+            rate=cnt/(now-start)
+            print("\r %6.2f " % (now-init),end="")
+            print(" rate=%6.2f " % rate, end="")
+            print(" ov_L=%6.2f " % ovL, end="")
+            print(" ov_R=%6.2f " % ovR, end="")
+            print(" dL=%6.2f " % left, end="")
+            print(" dC=%6.2f " % center, end="")
+            print(" dR=%6.2f " % right, end="")
+            cnt=0
+            start=now
+
+    except (BlockingIOError, socket.error): # tof recv
         pass
 
-    if left>0 and center>0:
-        areaL=math.exp(gamma*math.log(center))*math.exp((1-gamma)*math.log(left))
-    if right>0 and center>0:
-        areaR=math.exp(gamma*math.log(center))*math.exp((1-gamma)*math.log(right))
-    '''
-    # tanh関数を使った擬弾性散乱
-    tof_r = tanh1(areaL)
-    tof_l = tanh2(areaR)
-    if areaL < THRESHOLD or areaR < THRESHOLD:
-        ovL = 1.0
-        ovR = 1.0
-    vl = ovL * tof_l * MAX_SPEED 
-    vr = ovR * tof_r * MAX_SPEED
-    '''
-    # 一定時間の擬弾性散乱
-    if areaL <= THRESHOLD or areaR <= THRESHOLD:
-        if areaL<areaR:
-            mL.run(TURN_POWER)
-            mR.run(-TURN_POWER)
-            time.sleep(TURN_TIME)
-        else:
-            mL.run(-TURN_POWER)
-            mR.run(TURN_POWER)
-            time.sleep(TURN_TIME)
-    else:
-       vl = ovL * MAX_SPEED 
-       vr = ovR * MAX_SPEED
-
     if motor_run == 'y':
-        mL.run(vl)
-        mR.run(vr)
-
-    now=time.time()
-    if now-start>PERIOD:
-       rate=cnt/(now-start)
-       print("\r %6.2f " % (now-init),end="")
-       print(" rate=%6.2f " % rate, end="")
-       print(" ov_L=%6.2f " % ovL, end="")
-       print(" ov_R=%6.2f " % ovR, end="")
-       print(" dL=%6.2f " % lidar_distanceL, end="")
-       print(" dC=%6.2f " % lidar_distanceC, end="")
-       print(" dR=%6.2f " % lidar_distanceR, end="")
-       cnt=0
-       start=now
+        # 一定時間の擬弾性散乱
+        if areaL <= THRESHOLD or areaR <= THRESHOLD:
+            if areaL<areaR:
+                mL.run(TURN_POWER)
+                mR.run(-TURN_POWER)
+                time.sleep(TURN_TIME)
+            else:
+                mL.run(-TURN_POWER)
+                mR.run(TURN_POWER)
+                time.sleep(TURN_TIME)
+        else: # run by OV model
+            vl = ovL * MAX_SPEED 
+            vr = ovR * MAX_SPEED
+            mL.run(vl)
+            mR.run(vr)
 
     try:
        ch=mt_str_udp.recv_str()
