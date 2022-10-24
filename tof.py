@@ -95,23 +95,22 @@ def shutdown(tof1,tof2,tof3):
 
 
 if __name__=="__main__":
-   import modules.keyin as keyin
    import modules.socket as sk
 
    tofL,tofR,tofC=start()
    tof_udp=sk.UDP_Send(sk.robot,sk.tof_port)
+   tof_str_udp=sk.UDP_Recv(sk.robot,sk.tof_str_port)
    data=[0,0,0]
 
    period=0.2
-   kbd=keyin.Keyboard()
    now=time.time()
    start=now
    init=now
    rate=0
    print("Input 'q' to stop this program")
    print(" Time  |  left  |  center  |  right")
-   key='c'
-   while key!='q':
+   ch='c'
+   while ch!='q':
       try:
          left = tofL.get_distance()
          #time.sleep(0.01)
@@ -140,6 +139,10 @@ if __name__=="__main__":
 
       #time.sleep(timing/1000000.00)
       #time.sleep(0.01)
-      key=kbd.read()
+
+      try:
+         ch=tof_str_udp.recv_str()
+      except (BlockingIOError, socket.error):
+         pass
 
    shutdown(tofL,tofR,tofC)
