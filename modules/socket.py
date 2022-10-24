@@ -51,6 +51,7 @@ class UDP_Recv():
         self.sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
         self.sock.bind((addr,port))
         self.sock.setblocking(0)
+        self.sock.setsockopt(socket.SOL_SOCKET,socket.SO_RCVBUF,0)
 
     def recv_str(self):
         message = self.sock.recv(15260).decode('utf-8')
