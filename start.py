@@ -48,6 +48,13 @@ cmd='ssh pi@'+sk.robot+' 2DOVR/picam.py &'
 picam_process=Popen(cmd.strip().split(' '))
 # --------------------
 
+# ------tof --------
+tof_str_udp=sk.UDP_Send(sk.robot,sk.tof_str_port)
+cmd='ssh pi@'+sk.robot+' 2DOVR/tof.py &'
+# 実行後に"&"をつけないと，local(このプログラム)がキーボードを受け付けない．
+tof_process=Popen(cmd.strip().split(' '))
+# --------------------
+
 
 # ---- thetaの値をファイルに保存するため -----
 ex_start_time = datetime.datetime.now()
@@ -108,7 +115,7 @@ mt_str_udp=sk.UDP_Send(sk.robot,sk.motor_port)
 vlvr_udp=sk.UDP_Send(sk.robot,sk.vlvr_port)
 cmd='ssh pi@'+sk.robot+' 2DOVR/2dovr.py &'
 # 実行後に"&"をつけないと，local(このプログラム)がキーボードを受け付けない．
-#robot_process=Popen(cmd.strip().split(' '))
+robot_process=Popen(cmd.strip().split(' '))
 data=[0.0,0.0]
 # --------------------------------------------------
 
@@ -156,6 +163,7 @@ while ch!='q':
         ch=key.read()
         str_udp.send_str(ch) # レイトを落として周期的にchを送信
         mt_str_udp.send_str(ch) 
+        tof_str_udp.send_str(ch) 
         rate=cnt/(now-start)
         if dist!=None and theta!=None:
            print("\r time=%5.2f sec" % (now-init), end='')
