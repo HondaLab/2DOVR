@@ -108,7 +108,7 @@ mt_str_udp=sk.UDP_Send(sk.robot,sk.motor_port)
 vlvr_udp=sk.UDP_Send(sk.robot,sk.vlvr_port)
 cmd='ssh pi@'+sk.robot+' 2DOVR/2dovr.py &'
 # 実行後に"&"をつけないと，local(このプログラム)がキーボードを受け付けない．
-robot_process=Popen(cmd.strip().split(' '))
+#robot_process=Popen(cmd.strip().split(' '))
 data=[0.0,0.0]
 # --------------------------------------------------
 
@@ -124,6 +124,7 @@ while ch!='q':
 
     try:
         frame=cam_udp.recv_img()
+        cnt+=1
         dist,theta=picam_frame.calc(frame,lower,upper)
         if dist == None:
             dist = float(2000)
@@ -142,7 +143,7 @@ while ch!='q':
         #data.clear()
         
         vw.write(frame)
-        cnt+=1
+
         if imshow=='y':
             show=cv2.resize(frame,(800,300))
             #ax.imshow(show,extent=[*xlim,*ylim], aspect='auto',alpha=0.6)
