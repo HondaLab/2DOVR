@@ -96,6 +96,7 @@ def shutdown(tof1,tof2,tof3):
 
 if __name__=="__main__":
    import modules.socket as sk
+   import socket
 
    tofL,tofR,tofC=start()
    tof_udp=sk.UDP_Send(sk.robot,sk.tof_port)
