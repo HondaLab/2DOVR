@@ -95,9 +95,12 @@ def shutdown(tof1,tof2,tof3):
 
 
 if __name__=="__main__":
-   import keyin
+   import modules.keyin as keyin
+   import modules.socket as sk
 
    tofL,tofR,tofC=start()
+   tof_udp=sk.UDP_Send(sk.robot,sk.tof_port)
+   data=[0,0,0]
 
    period=0.2
    kbd=keyin.Keyboard()
@@ -111,10 +114,14 @@ if __name__=="__main__":
    while key!='q':
       try:
          left = tofL.get_distance()
-         time.sleep(0.02)
+         #time.sleep(0.01)
          right = tofR.get_distance()
-         time.sleep(0.02)
+         #time.sleep(0.01)
          center = tofC.get_distance()
+         data[0]=left
+         data[1]=right
+         data[2]=center
+         tof_udp.send(data)
          rate+=1
 
          now = time.time()
@@ -132,7 +139,7 @@ if __name__=="__main__":
          pass
 
       #time.sleep(timing/1000000.00)
-      time.sleep(0.01)
+      #time.sleep(0.01)
       key=kbd.read()
 
    shutdown(tofL,tofR,tofC)
