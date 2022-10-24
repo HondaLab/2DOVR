@@ -99,7 +99,7 @@ if __name__=="__main__":
    import socket
 
    tofL,tofR,tofC=start()
-   tof_udp=sk.UDP_Send(sk.robot,sk.tof_port)
+   tof_udp=sk.UDP_Send(sk.pc,sk.tof_port)
    tof_str_udp=sk.UDP_Recv(sk.robot,sk.tof_str_port)
    data=[0,0,0]
 
@@ -124,6 +124,7 @@ if __name__=="__main__":
          tof_udp.send(data)
          rate+=1
 
+         '''
          now = time.time()
          if now-start>period: 
             rate=rate/period
@@ -134,6 +135,7 @@ if __name__=="__main__":
             print (" right=%6d (mm)" % (right), end=' ')
             rate=0
             start=now
+         '''
 
       except :
          pass
