@@ -5,6 +5,7 @@ import calc_dist_theta
 import ovm
 from subprocess import Popen
 import cv2
+import math
 import socket
 import time
 import csv
@@ -15,6 +16,7 @@ PERIOD=0.2 # 'q'を送信する周期 1/rate
 SLEEP=0.02
 imshow='y'
 select_hsv='y'
+gamma=0.3333
 
 # 実験パラメータ読み込み
 FILE = "parm_ovm.csv" 
@@ -49,10 +51,13 @@ picam_process=Popen(cmd.strip().split(' '))
 # --------------------
 
 # ------tof --------
+tof_udp=sk.UDP_Recv(sk.pc,sk.tof_port)
+area_udp=sk.UDP_Send(sk.robot,sk.area_port)
 tof_str_udp=sk.UDP_Send(sk.robot,sk.tof_str_port)
 cmd='ssh pi@'+sk.robot+' 2DOVR/tof.py &'
 # 実行後に"&"をつけないと，local(このプログラム)がキーボードを受け付けない．
 tof_process=Popen(cmd.strip().split(' '))
+left=1;right=1;center=1
 # --------------------
 
 
@@ -116,7 +121,7 @@ vlvr_udp=sk.UDP_Send(sk.robot,sk.vlvr_port)
 cmd='ssh pi@'+sk.robot+' 2DOVR/2dovr.py &'
 # 実行後に"&"をつけないと，local(このプログラム)がキーボードを受け付けない．
 robot_process=Popen(cmd.strip().split(' '))
-data=[0.0,0.0]
+data=[0.0,0.0,0.0]
 # --------------------------------------------------
 
 key=keyin.Keyboard()
@@ -159,6 +164,35 @@ while ch!='q':
     except (BlockingIOError, socket.error):
         pass
 
+    try:
+        data=tof_udp.recv()
+        left=data[0]/1000  # 単位をメートルに換算
+        right=data[1]/1000
+        center=data[2]/1000
+
+        if left>0 and center>0:
+            areaL=math.exp(gamma*math.log(center))*math.exp((1-gamma)*math.log(left))
+        if right>0 and center>0:
+            areaR=math.exp(gamma*math.log(center))*math.exp((1-gamma)*math.log(right))
+
+        data[0]=areaL
+        data[1]=areaR
+        area_udp.send(data)
+
+        '''
+        # tanh関数を使った擬弾性散乱
+        tof_r = tanh1(areaL)
+        tof_l = tanh2(areaR)
+        if areaL < THRESHOLD or areaR < THRESHOLD:
+            ovL = 1.0
+            ovR = 1.0
+        vl = ovL * tof_l * MAX_SPEED 
+        vr = ovR * tof_r * MAX_SPEED
+        '''
+       
+    except (BlockingIOError, socket.error):
+        pass
+
     if now-start>PERIOD:
         ch=key.read()
         str_udp.send_str(ch) # レイトを落として周期的にchを送信
@@ -173,6 +207,9 @@ while ch!='q':
            print(" dt=%8.4f" % dt, end='')
            print(" ov_L=%6.2f" % vl, end='')
            print(" ov_R=%6.2f" % vr, end='')
+           print(" left=%6.2f" % left, end='')
+           print(" center=%6.2f" % center, end='')
+           print(" right=%6.2f" % right, end='')
            write_fp.write(str('{:.2g}'.format(now-init))+", ")
            write_fp.write(str(theta) + ", ")
            write_fp.write("\n")
