@@ -16,6 +16,7 @@ motor_port = 50004
 cam_port = 50005
 svd_port = 50006
 recv_port = 50007
+area_port = 50008
 
 class UDP_Send():
     def __init__(self,addr,port):
