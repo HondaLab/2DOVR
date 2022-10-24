@@ -12,7 +12,7 @@ import csv
 import datetime
 import platform
 
-PERIOD=0.2 # 'q'を送信する周期 1/rate
+PERIOD=0.1 # 'q'を送信する周期 1/rate
 SLEEP=0.02
 imshow='y'
 select_hsv='y'
@@ -60,6 +60,15 @@ tof_process=Popen(cmd.strip().split(' '))
 left=1;right=1;center=1
 # --------------------
 
+# ------ 2dovr関連UDPインスタンスとコマンド --------
+mt_str_udp=sk.UDP_Send(sk.robot,sk.motor_port)
+vlvr_udp=sk.UDP_Send(sk.robot,sk.vlvr_port)
+cmd='ssh pi@'+sk.robot+' 2DOVR/2dovr.py &'
+# 実行後に"&"をつけないと，local(このプログラム)がキーボードを受け付けない．
+robot_process=Popen(cmd.strip().split(' '))
+data=[0.0,0.0,0.0]
+# --------------------------------------------------
+
 
 # ---- thetaの値をファイルに保存するため -----
 ex_start_time = datetime.datetime.now()
@@ -91,6 +100,15 @@ height=frame.shape[0]
 print("# Resolution: %5d x %5d" % (width,height))
 size = (width, height)
 
+print('Waiting for tofs fromrobot.')
+recv=0
+while recv==0:
+    try: 
+        data=tof_udp.recv()
+        recv=1
+    except (BlockingIOError, socket.error):
+        recv=0
+
 # ----- ロボットカメラからの映像を保存する -----
 OUT_FILE="./collected.mp4"
 fmt = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
@@ -115,14 +133,6 @@ else:
     lower = np.array([H-h_range, S-s_range, V-v_range])
     upper = np.array([H+h_range, S+s_range, V+v_range])
 
-# ------ 2dovr関連UDPインスタンスとコマンド --------
-mt_str_udp=sk.UDP_Send(sk.robot,sk.motor_port)
-vlvr_udp=sk.UDP_Send(sk.robot,sk.vlvr_port)
-cmd='ssh pi@'+sk.robot+' 2DOVR/2dovr.py &'
-# 実行後に"&"をつけないと，local(このプログラム)がキーボードを受け付けない．
-robot_process=Popen(cmd.strip().split(' '))
-data=[0.0,0.0,0.0]
-# --------------------------------------------------
 
 key=keyin.Keyboard()
 now=time.time()
