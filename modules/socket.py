@@ -11,10 +11,11 @@ calc = '172.16.8.181' # 計算サーバ
 # 複数動かす場合は，以下のポート番号の重複を避ける.
 vlvr_port = 50001
 tof_port = 50002
-motor_port = 50003
-cam_port = 50004
-svd_port = 50005
-recv_port = 50006
+tof_str_port = 50003
+motor_port = 50004
+cam_port = 50005
+svd_port = 50006
+recv_port = 50007
 
 class UDP_Send():
     def __init__(self,addr,port):
