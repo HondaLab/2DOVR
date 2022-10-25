@@ -2,7 +2,7 @@
 import modules.socket as sk
 import modules.keyin as keyin
 import calc_dist_theta
-import ovm
+import ovt  # Optimum Velocity Turn algorithm
 from subprocess import Popen
 import cv2
 import math
@@ -40,7 +40,7 @@ file_pointer = open(FILE,'r')
 parm = Parameter_read(file_pointer)
 
 # 最適速度インスタンス
-ov = ovm.Optimal_Velocity_class(parm) 
+ov = ovt.Optimal_Velocity_class(parm) 
 
 # ------picam --------
 str_udp=sk.UDP_Send(sk.robot,sk.cam_port)
@@ -65,7 +65,7 @@ mt_str_udp=sk.UDP_Send(sk.robot,sk.motor_port)
 vlvr_udp=sk.UDP_Send(sk.robot,sk.vlvr_port)
 cmd='ssh pi@'+sk.robot+' 2DOVR/2dovr.py &'
 # 実行後に"&"をつけないと，local(このプログラム)がキーボードを受け付けない．
-robot_process=Popen(cmd.strip().split(' '))
+#robot_process=Popen(cmd.strip().split(' '))
 data=[0.0,0.0,0.0]
 # --------------------------------------------------
 
@@ -149,7 +149,7 @@ while ch!='q':
         cnt+=1
         dist,theta=picam_frame.calc(frame,lower,upper)
         if dist == None:
-            dist = float(2000)
+            dist = float(8)
             theta = 0.0
         else:
             # pixyカメラで物体を認識している時
@@ -158,7 +158,7 @@ while ch!='q':
         last = now
         now = time.time()
         dt = now-last
-        vl, vr, omega = ov.calc(dist,theta,dt)
+        vl, vr = ov.calc(dist,theta,dt)
         data[0]=vl
         data[1]=vr
         vlvr_udp.send(data)
@@ -211,15 +211,14 @@ while ch!='q':
         rate=cnt/(now-start)
         if dist!=None and theta!=None:
            print("\r time=%5.2f sec" % (now-init), end='')
-           print(" rate=%6.2f" % rate, end='')
-           print(" dist=%6.2f" % dist, end='')
-           print(" theta=%6.2f" % theta, end='')
-           print(" dt=%8.4f" % dt, end='')
+           print(" rate=%5.2f" % rate, end='')
+           print(" dist=%5.2f" % dist, end='')
+           print(" theta=%5.2f" % theta, end='')
+           #print(" dt=%6.3f" % dt, end='')
            print(" ov_L=%6.2f" % vl, end='')
            print(" ov_R=%6.2f" % vr, end='')
-           print(" left=%6.2f" % left, end='')
-           print(" center=%6.2f" % center, end='')
-           print(" right=%6.2f" % right, end='')
+           #print(" areaL=%6.2f" % areaL, end='')
+           #print(" areaR=%6.2f" % areaR, end='')
            write_fp.write(str('{:.2g}'.format(now-init))+", ")
            write_fp.write(str(theta) + ", ")
            write_fp.write("\n")
