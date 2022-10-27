@@ -60,9 +60,9 @@ cmd='ssh pi@'+sk.robot+' 2DOVR/tof.py &'
 tof_process=Popen(cmd.strip().split(' '))
 left=1;right=1;center=1
 LIST_SIZE=10
-left_list=[0.0]*LIST_SIZE
-center_list=[0.0]*LIST_SIZE
-right_list=[0.0]*LIST_SIZE
+left_list=[1.0]*LIST_SIZE
+center_list=[1.0]*LIST_SIZE
+right_list=[1.0]*LIST_SIZE
 # --------------------
 
 # ------ 2dovr関連UDPインスタンスとコマンド --------
@@ -106,13 +106,22 @@ print("# Resolution: %5d x %5d" % (width,height))
 size = (width, height)
 
 print('Waiting for tofs fromrobot.')
-recv=0
-while recv==0:
+cnt=0
+while cnt<LIST_SIZE:
     try: 
         data=tof_udp.recv()
-        recv=1
+        left=data[0]/1000  # 単位をメートルに換算
+        right=data[1]/1000
+        center=data[2]/1000
+        left_list.pop(0)
+        left_list.append(left)
+        center_list.pop(0)
+        center_list.append(center)
+        right_list.pop(0)
+        right_list.append(right)
+        cnt+=1
     except (BlockingIOError, socket.error):
-        recv=0
+        pass
 
 # ----- ロボットカメラからの映像を保存する -----
 OUT_FILE="./collected.mp4"
@@ -146,6 +155,7 @@ init=now
 ch='c'
 cnt=0
 rate=30.0
+areaL=1;areaR=1
 print("'q'を入力すると終了します．(Input 'q' to quit.)")
 while ch!='q':
 
@@ -187,19 +197,19 @@ while ch!='q':
         left_av=np.sum(left_list)/LIST_SIZE
         center_av=np.sum(center_list)/LIST_SIZE
         right_av=np.sum(right_list)/LIST_SIZE
-        if np.fabs(left-left_av)/100<0.5:
+        if np.fabs((left-left_av)/left_av)<1.5:
            left_list.pop(0)
            left_list.append(left)
-        if np.fabs(center-center_av)/100<0.5:
+        if np.fabs((center-center_av)/center_av)<1.5:
            center_list.pop(0)
            center_list.append(center)
-        if np.fabs(right-right_av)/100<0.5:
+        if np.fabs((right-right_av)/right_av)<1.5:
            right_list.pop(0)
            right_list.append(right)
 
-        if left>0 and center>0:
+        if left_av>0 and center_av>0:
             areaL=math.exp(gamma*math.log(center_av))*math.exp((1-gamma)*math.log(left_av))
-        if right>0 and center>0:
+        if right_av>0 and center_av>0:
             areaR=math.exp(gamma*math.log(center_av))*math.exp((1-gamma)*math.log(right_av))
 
         data[0]=areaL
