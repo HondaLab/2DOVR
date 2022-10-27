@@ -13,7 +13,7 @@ class Optimal_Velocity_class:
         self.beta = parm[3]  #αβで最適速度関数の変化率を決定
         self.b = parm[4]     #変曲点のx座標(ロボットの車頭距離にする)
         self.c = parm[5]     #前進後退の割合決定
-        self.d = 2.00     # ロボット半径
+        self.d = 5.00     # ロボット半径
         self.v = 0.0
         self.omega = 0.0
         print("#     a ",end="")
