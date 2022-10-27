@@ -52,7 +52,7 @@ class UDP_Recv():
         self.sock.bind((addr,port))
         self.sock.setblocking(0)
         self.sock.setsockopt(socket.SOL_SOCKET,socket.SO_RCVBUF,0)
-            # Zero buffer size for real-time recieve
+            # リアルタイム受信するために受信バッファサイズをゼロにする．
 
     def recv_str(self):
         message = self.sock.recv(15260).decode('utf-8')
