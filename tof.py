@@ -63,21 +63,21 @@ def start():
    # call to start ranging 
    GPIO.output(sensor1_shutdown, GPIO.HIGH)
    time.sleep(0.50)
-   tof1.start_ranging(vl53.VL53L0X_HIGH_SPEED_MODE)
-   #tof1.start_ranging(vl53.VL53L0X_BETTER_ACCURACY_MODE)
+   #tof1.start_ranging(vl53.VL53L0X_HIGH_SPEED_MODE)
+   tof1.start_ranging(vl53.VL53L0X_BETTER_ACCURACY_MODE)
    #tof1.start_ranging(vl53.VL53L0X_LONG_RANGE_MODE)
 
    # Set shutdown pin high for the second VL53L0X then 
    # call to start ranging 
    GPIO.output(sensor2_shutdown, GPIO.HIGH)
    time.sleep(0.50)
-   tof2.start_ranging(vl53.VL53L0X_HIGH_SPEED_MODE)
+   tof2.start_ranging(vl53.VL53L0X_BETTER_ACCURACY_MODE)
 
    # Set shutdown pin high for the second VL53L0X then 
    # call to start ranging 
    GPIO.output(sensor3_shutdown, GPIO.HIGH)
    time.sleep(0.50)
-   tof3.start_ranging(vl53.VL53L0X_HIGH_SPEED_MODE)
+   tof3.start_ranging(vl53.VL53L0X_BETTER_ACCURACY_MODE)
 
    #timing = tof.get_timing()
    #if (timing < 20000):
@@ -114,9 +114,9 @@ if __name__=="__main__":
    while ch!='q':
       try:
          left = tofL.get_distance()
-         #time.sleep(0.01)
+         time.sleep(0.02)
          right = tofR.get_distance()
-         #time.sleep(0.01)
+         time.sleep(0.02)
          center = tofC.get_distance()
          data[0]=left
          data[1]=right
@@ -140,8 +140,7 @@ if __name__=="__main__":
       except :
          pass
 
-      #time.sleep(timing/1000000.00)
-      #time.sleep(0.01)
+      time.sleep(0.02)
 
       try:
          ch=tof_str_udp.recv_str()
