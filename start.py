@@ -11,6 +11,7 @@ import time
 import csv
 import datetime
 import platform
+import numpy as np
 
 PERIOD=0.1 # 'q'を送信する周期 1/rate
 SLEEP=0.02
@@ -58,6 +59,10 @@ cmd='ssh pi@'+sk.robot+' 2DOVR/tof.py &'
 # 実行後に"&"をつけないと，local(このプログラム)がキーボードを受け付けない．
 tof_process=Popen(cmd.strip().split(' '))
 left=1;right=1;center=1
+LIST_SIZE=10
+left_list=[0.0]*LIST_SIZE
+center_list=[0.0]*LIST_SIZE
+right_list=[0.0]*LIST_SIZE
 # --------------------
 
 # ------ 2dovr関連UDPインスタンスとコマンド --------
@@ -179,11 +184,23 @@ while ch!='q':
         left=data[0]/1000  # 単位をメートルに換算
         right=data[1]/1000
         center=data[2]/1000
+        left_av=np.sum(left_list)/LIST_SIZE
+        center_av=np.sum(center_list)/LIST_SIZE
+        right_av=np.sum(right_list)/LIST_SIZE
+        if np.fabs(left-left_av)/100<0.5:
+           left_list.pop(0)
+           left_list.append(left)
+        if np.fabs(center-center_av)/100<0.5:
+           center_list.pop(0)
+           center_list.append(center)
+        if np.fabs(right-right_av)/100<0.5:
+           right_list.pop(0)
+           right_list.append(right)
 
         if left>0 and center>0:
-            areaL=math.exp(gamma*math.log(center))*math.exp((1-gamma)*math.log(left))
+            areaL=math.exp(gamma*math.log(center_av))*math.exp((1-gamma)*math.log(left_av))
         if right>0 and center>0:
-            areaR=math.exp(gamma*math.log(center))*math.exp((1-gamma)*math.log(right))
+            areaR=math.exp(gamma*math.log(center_av))*math.exp((1-gamma)*math.log(right_av))
 
         data[0]=areaL
         data[1]=areaR
@@ -217,7 +234,9 @@ while ch!='q':
            #print(" dt=%6.3f" % dt, end='')
            print(" ov_L=%6.2f" % vl, end='')
            print(" ov_R=%6.2f" % vr, end='')
-           #print(" areaL=%6.2f" % areaL, end='')
+           print(" left_av=%6.2f" % left_av, end='')
+           print(" center_av=%6.2f" % center_av, end='')
+           print(" right_av=%6.2f" % right_av, end='')
            #print(" areaR=%6.2f" % areaR, end='')
            write_fp.write(str('{:.2g}'.format(now-init))+", ")
            write_fp.write(str(theta) + ", ")
