@@ -23,7 +23,10 @@ class Motor:
       self.pi.set_servo_pulsewidth(gpio, MID_WIDTH)
 
    def move(self,power):
-      self.pi.set_servo_pulsewidth(self.gpio, MID_WIDTH+power)
+      pwidth=MID_WIDTH+power
+      if pwidth>MAX_WIDTH: pwidth=MAX_WIDTH-1
+      if pwidth<MIN_WIDTH: pwidth=MIN_WIDTH+1
+      self.pi.set_servo_pulsewidth(self.gpio, pwidth)
 
    def stop(self):
       self.move(0)
@@ -32,12 +35,12 @@ class Motor:
 class Lmotor(Motor):
    def run(self,power):
       output=62*np.arctanh(-power/101)+6*np.sign(-power)
-      self.move(output)
+      self.move(-power)
 
 class Rmotor(Motor):
    def run(self,power):
       output=62*np.arctanh(power/101)+6*np.sign(power)
-      self.move(output)
+      self.move(power)
        
 if __name__=='__main__':
    # Motor output
