@@ -21,7 +21,7 @@ PERIOD=0.2
 
 GPIO_L = 17     # 左モーターのgpio 17番
 GPIO_R = 18     # 右モーターのgpio 18番
-MAX_SPEED = 62  # パーセント
+MAX_SPEED = 80  # パーセント
 DT = 0.1
 dt = DT
 THRESHOLD = 0.3 # OVMをon/offするための閾値
