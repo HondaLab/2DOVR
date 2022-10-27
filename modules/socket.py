@@ -3,9 +3,9 @@ import numpy
 import cv2
 
 # IPアドレス
-robot='172.16.8.100'  # ロボット
-pc = '172.16.8.181'   # 操作端末PC
-calc = '172.16.8.181' # 計算サーバ
+robot='172.16.7.100'  # ロボット
+pc = '172.16.7.181'   # 操作端末PC
+calc = '172.16.7.181' # 計算サーバ
 
 # １つの計算サーバで recv_data.py / calc_nn_h1.py を
 # 複数動かす場合は，以下のポート番号の重複を避ける.
@@ -52,6 +52,7 @@ class UDP_Recv():
         self.sock.bind((addr,port))
         self.sock.setblocking(0)
         self.sock.setsockopt(socket.SOL_SOCKET,socket.SO_RCVBUF,0)
+            # Zero buffer size for real-time recieve
 
     def recv_str(self):
         message = self.sock.recv(15260).decode('utf-8')
