@@ -42,7 +42,7 @@ class Optimal_Velocity_class:
         left = self.v + self.d * self.omega
         right = self.v - self.d * self.omega
 
-        left = left/(2.0*self.alpha*(1+math.fabs(self.c)))
-        right = right/(2.0*self.alpha*(1+math.fabs(self.c)))
+        left = left/(self.alpha*(1+math.fabs(self.c)))
+        right = right/(self.alpha*(1+math.fabs(self.c)))
         
         return left,right
