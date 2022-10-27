@@ -25,8 +25,8 @@ MAX_SPEED = 80  # パーセント
 DT = 0.1
 dt = DT
 THRESHOLD = 0.3 # OVMをon/offするための閾値
-TURN_TIME=0.3
-TURN_POWER=100
+TURN_TIME=0.1
+TURN_POWER=80
 
 # UDP ソケットインスタンス
 mt_str_udp=sk.UDP_Recv(sk.robot,sk.motor_port)
