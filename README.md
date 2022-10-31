@@ -28,7 +28,12 @@ Two dimensional optimal velocity robot
 
 $$ \dot{v} =  a [ V(x)-v ]$$
 
+$$ v' = v + \dot{v} dt $$
+
 $$ \dot{\omega} =  a [\theta-\omega]$$
+
+$$ \omega' = \omega + \dot{\omega} dt $$
+
 
 ただし， $a$ は感応度， $V(x)$ が最適速度関数です．
 $a$ を大きくするとロボットは敏感に変化に反応します．
