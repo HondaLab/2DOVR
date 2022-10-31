@@ -23,15 +23,22 @@ Two dimensional optimal velocity robot
 
 ### 2022 10/31
 左右のモーター出力の更新アルゴリズム(ovt.py).
-カメラで捕らえた先行ロボットとの距離を $d$ ，進行方向との相対角度を $\theta$ としたとき，
+カメラで捕らえた先行ロボットとの距離を $x$ ，進行方向との相対角度を $\theta$ としたとき，
 
-$$ v' = v + a [ V(d)-v ]$$
+$$ v' = v + a [ V(x)-v ]$$
 
 $$ \omega' = \omega + a [\theta-\omega]$$
 
-ただし， $V(d)$ が最適速度です．
+ただし， $a$ が感応度， $V(x)$ が最適速度です．
+$v$ がロボットの速さ， $\omega$ がロボットの旋回角速度を表します．
 
-$$ V(d)=(1+\cos \theta)\alpha[\tanh(\beta(d-b)+c] $$
+最適速度 $V(x)$ は下記の式で求めます．
+
+$$ V(x)=(1+\cos \theta)\alpha[\tanh(\beta(x-b)+c] $$
+
+$\alpha$ は最高速度を決めるパラメータ， $b$ が安全距離です．
+
+$-1 \leq c \leq 1$ のパラメータです．
 
 左右のモーター出力 $L,R$ を
 
