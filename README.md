@@ -30,6 +30,7 @@ $$ v' = v + a [ V(d)-v ]$$
 $$ \omega' = \omega + a [\theta-\omega]$$
 
 ただし， $V(d)$ が最適速度です．
+
 $$ V(d)=(1+\cos \theta)\alpha[\tanh(\beta(d-b)+c]
 
 
