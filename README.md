@@ -20,7 +20,11 @@ Two dimensional optimal velocity robot
 
 
 ## History
-2021 5/26
+
+＃　2022 10/31
+$$ v \lefarrow v + a\{V(d)-v\}$$
+
+＃　2021 5/26
  * omega = atanh(vx/vy)
  * vL= v + r * omega
  * vR= v - r * omega
