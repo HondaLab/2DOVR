@@ -22,7 +22,7 @@ Two dimensional optimal velocity robot
 ## History
 
 ＃　2022 10/31
-$$ v \lefarrow v + a\{V(d)-v\}$$
+$$ v \leftarrow v + a\{V(d)-v\}$$
 
 ＃　2021 5/26
  * omega = atanh(vx/vy)
