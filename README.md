@@ -26,9 +26,9 @@ Two dimensional optimal velocity robot
 カメラで捕らえた先行ロボットとの距離を $x$ ，進行方向との相対角度を $\theta$ としたとき，
 下記の式で $v, \omega$ を更新します．
 
-$$ v' = v + a [ V(x)-v ]$$
+$$ \dot{v} =  a [ V(x)-v ]$$
 
-$$ \omega' = \omega + a [\theta-\omega]$$
+$$ \dot{\omega} =  a [\theta-\omega]$$
 
 ただし， $a$ は感応度， $V(x)$ が最適速度関数です．
 $a$ を大きくするとロボットは敏感に変化に反応します．
