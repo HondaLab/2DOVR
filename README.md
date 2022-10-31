@@ -31,8 +31,14 @@ $$ \omega' = \omega + a [\theta-\omega]$$
 
 ただし， $V(d)$ が最適速度です．
 
-$$ V(d)=(1+\cos \theta)\alpha[\tanh(\beta(d-b)+c]
+$$ V(d)=(1+\cos \theta)\alpha[\tanh(\beta(d-b)+c] $$
 
+左右のモーター出力 $L,R$ を
+
+$$ L = v + l \omega $$
+$$ R = v - l \omega $$
+
+で求めます．
 
 ### 2021 5/26
  * omega = atanh(vx/vy)
