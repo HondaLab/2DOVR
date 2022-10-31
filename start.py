@@ -105,6 +105,7 @@ height=frame.shape[0]
 print("# Resolution: %5d x %5d" % (width,height))
 size = (width, height)
 
+# tof値の移動平均初期化
 print('Waiting for tofs fromrobot.')
 cnt=0
 while cnt<LIST_SIZE:
@@ -113,12 +114,9 @@ while cnt<LIST_SIZE:
         left=data[0]/1000  # 単位をメートルに換算
         right=data[1]/1000
         center=data[2]/1000
-        left_list.pop(0)
-        left_list.append(left)
-        center_list.pop(0)
-        center_list.append(center)
-        right_list.pop(0)
-        right_list.append(right)
+        left_list[cnt]=left
+        right_list[cnt]=right
+        center_list[cnt]=center
         cnt+=1
     except (BlockingIOError, socket.error):
         pass
